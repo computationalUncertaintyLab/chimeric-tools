@@ -4,6 +4,7 @@
 
 ## functions
 
+### Preprocess folder
 - Function name: formatIndividualPredictions
   - input: a single csv file of individual predictions from metaculus
   - output: a pandas daat frame that is long format
@@ -19,7 +20,14 @@
   - output: object to interact with API
   - info: prof m will write this and Wenuxan and Xinze will test how well it does (or does not) work
 
-# Time Folder
+### spatial folder
+
+- Function Name: fromState2FIPS
+  - input: String abbrevation of a state. For example "PA"
+  - output: The FIPS value that corresponds to the state (For example the FIPS for PA is 42)
+  -  info: I think this URL will be useful https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697
+
+### Time Folder
 
 ## functions
 
