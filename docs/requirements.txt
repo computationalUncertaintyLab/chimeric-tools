@@ -12,3 +12,4 @@ sphinx-panels
 sphinx-book-theme>=0.1.7
 Sphinx>=4.3
 sphinxcontrib-bibtex
+sphinx_theme
