@@ -57,14 +57,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3.6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/_build/html 
+          publish_dir: docs/_build/html src/chimeric_tools 
+          
           user_name: "wenxuanye"
           user_email: "wey420@lehigh.edu"
 
-      - name: 🚀 Deploy to GitHub pages
-        uses: peaceiris/actions-gh-pages@v3.6.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: src 
-          user_name: "wenxuanye"
-          user_email: "wey420@lehigh.edu"
