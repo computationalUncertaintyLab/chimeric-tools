@@ -42,7 +42,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           sudo apt update
-          pip install -r docs/requirements.txt
+          pip install -r requirements.txt
 
       - name: 🔧 Build HTML
         run: |
@@ -51,14 +51,13 @@ jobs:
 
         # remove the .doctrees folder when building for deployment as it takes two thirds of disk space
       - name: 🔥 Clean up files
-        run: rm -r docs/_build/doctrees/
+        run: rm -r build/doctrees/
 
       - name: 🚀 Deploy to GitHub pages
         uses: peaceiris/actions-gh-pages@v3.6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/_build/html
-          publish_dir: src/chimeric_tools
+          publish_dir: build/html
           user_name: "wenxuanye"
           user_email: "wey420@lehigh.edu"
 
