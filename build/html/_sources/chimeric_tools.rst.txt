@@ -1,0 +1,61 @@
+chimeric\_tools package
+=======================
+
+Submodules
+----------
+
+chimeric\_tools.Constant module
+-------------------------------
+
+.. automodule:: chimeric_tools.Constant
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+chimeric\_tools.Prepocess module
+--------------------------------
+
+.. automodule:: chimeric_tools.Prepocess
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+chimeric\_tools.Spatial module
+------------------------------
+
+.. automodule:: chimeric_tools.Spatial
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+chimeric\_tools.Time module
+---------------------------
+
+.. automodule:: chimeric_tools.Time
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+chimeric\_tools.example module
+------------------------------
+
+.. automodule:: chimeric_tools.example
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+chimeric\_tools.test module
+---------------------------
+
+.. automodule:: chimeric_tools.test
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: chimeric_tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
