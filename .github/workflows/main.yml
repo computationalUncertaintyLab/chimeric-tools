@@ -46,7 +46,6 @@ jobs:
 
       - name: 🔧 Build HTML
         run: |
-          cd docs
           make html
 
         # remove the .doctrees folder when building for deployment as it takes two thirds of disk space
