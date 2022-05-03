@@ -60,3 +60,47 @@ def todayEpiWeek():
     Date = datetime.date.today()
     Epiweek = epiweeks.Week.fromdate(Date)
     return Epiweek._week
+
+
+def getClosestDay(self,numericDay):
+    """
+    The user enters a value corresponding to the days of the week: Sunday (0)-Saturday(6)
+    and this function returns the closest date YYYY-mm-dd with this day of the week. 
+
+    :param: numericDay
+    :return: YYYY-mm-dd
+    :rtype: str
+    
+    # Return the YYYY-MM-DD of the closest Wednesday
+    getClosestDay(3)
+    
+    """
+    
+    import datetime
+    from epiweeks import Week
+
+    from datetime import datetime as dt
+    today     = dt.today()
+
+    weekAhead = today
+    weekday   = today.weekday()
+
+    while weekday != numericDay:
+        weekAhead = weekAhead + datetime.timedelta(days=1)
+        weekday = weekAhead.weekday()
+
+    weekBehind = today
+    weekday = today.weekday()
+    while weekday != numericDay:
+        weekBehind = weekBehind - datetime.timedelta(days=1)
+        weekday = weekBehind.weekday()
+
+    distance2weekahead  = abs( today - weekAhead)
+    distance2weekbehind = abs( today - weekBehind)
+
+    if distance2weekbehind < distance2weekahead:
+        self.forecast_date = weekBehind.strftime("%Y-%m-%d")
+        return weekBehind.strftime("%Y-%m-%d") 
+    return weekAhead.strftime("%Y-%m-%d") 
+
+
