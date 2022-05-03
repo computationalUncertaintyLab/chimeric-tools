@@ -53,4 +53,34 @@
 
 # Aggregation
 
+# Data
+Influenza-like illness data:
+
+Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
+
+The goal is to store all ILI values per epidemic week from 2009 to present in a compressed data file that allows fast I/O. 
+ILI data can be downloaded with a python package that comes with an API(API where Data is stored = https://cmu-delphi.github.io/delphi-epidata/api/README.html). The data we need is in the API under influenza data and is the endpoint "fluview". 
+We need to 
+1. Download weighted ILI values (wILI) from the API above from 2009 to present. 
+2. Format the wILI values into a dataframe with columns
+   1. Season
+       - The Infleunza season starts in epidemic week 40 of year YYYY and ends in epidemic week 20 of the follow year (YYYY+1). Season is a string value with one year a "/" and a second year (YYYY/YYYY) that depends on epidemic week. For example, If an epidemic week has year 2011 and any of the weeks 40 to 53 then the Season will be 2011/2012. If the week is 1-20 then the Season is 2010/2011.  
+   3. Epidemic week 
+       - The year and week YYYYWW of the associated wILI value
+   5. HHS Region
+       - There are 10 HHS regions and one national estimate of wILI. HHS regions are integers from 1-10. We can label the US as the integer 0.
+   7. wILI value
+
+Potential Data Storage techniques to explore: feather, parquet, hdf5. These appear to be designed for compressed storage and fast i/o. 
+
+We may need to add a key called "package_data" to setup.py 
+https://kiwidamien.github.io/making-a-python-package-vi-including-data-files.html
+
+
+
+
+
+
+
+
 
