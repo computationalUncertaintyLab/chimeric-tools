@@ -54,7 +54,7 @@
 # Aggregation
 
 # Data
-Influenza-like illness data:
+## Influenza-like illness data:
 
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
 
@@ -76,11 +76,30 @@ Potential Data Storage techniques to explore: feather, parquet, hdf5. These appe
 We may need to add a key called "package_data" to setup.py 
 https://kiwidamien.github.io/making-a-python-package-vi-including-data-files.html
 
+## Randomly select a flu season
+The user will supply a probability vector of length equal to the number of seasons.
+This vector must have all non-negative entries and sum to one. 
+We will select a season according to this probability vector (np.random.choice may help) and return an ILI dataframe. 
+
+## Randomly generate a flu season from HHS Region X
+The user will supply an integer corresponding to HHS region or a -1 for the US. 
+We will build a dataframe that contains the columns: week (an integer), HHS region (integer), and r_wILI (a float). 
+Depending on the season, there can be weeks 40-52 and 1-20 (33) or weeks 40-53 and 1-20 (34).
+1. We need to count the number of seasons that have 34 weeks (my guess is that there have been 2, maybe 3)
+2. With probability p we choose to generate a season with 33 weeks and with probability (1-p) we generate a 34 week season. 
+    - p is estimated as the number of past seasons with 33 weeks dividded by all seasons
+3. For each week (w), build a list of wili values from all past seasons corresponding to week w and the user supplied HHS region. 
+4. Select with uniform probability one of the wili values from the list in (3.) 
+5. Iterate steps 3. and 4. over all epidemic weeks.  
 
 
-
-
-
-
-
-
+## Randomly generate a flu season
+The user will supply no input
+We will build a dataframe that contains the columns: week (an integer), HHS region (the value -99), and r_wILI (a float). 
+Depending on the season, there can be weeks 40-52 and 1-20 (33) or weeks 40-53 and 1-20 (34).
+1. We need to count the number of seasons that have 34 weeks (my guess is that there have been 2, maybe 3)
+2. With probability p we choose to generate a season with 33 weeks and with probability (1-p) we generate a 34 week season. 
+    - p is estimated as the number of past seasons with 33 weeks dividded by all seasons
+3. For each week (w), build a list of wili values from all past seasons corresponding to week w over all HHS regions. 
+4. Select with uniform probability one of the wili values from the list in (3.) 
+5. Iterate steps 3. and 4. over all epidemic weeks.  
