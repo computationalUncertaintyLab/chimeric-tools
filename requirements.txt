@@ -14,3 +14,4 @@ Sphinx>=4.3
 sphinxcontrib-bibtex
 sphinx_theme
 epiweeks
+delphi_epidata

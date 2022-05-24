@@ -62,12 +62,12 @@ def todayEpiWeek():
     return Epiweek._week
 
 
-def getClosestDay(self,numericDay):
+def getClosestDay(numericDay):
     """
     The user enters a value corresponding to the days of the week: Sunday (0)-Saturday(6)
     and this function returns the closest date YYYY-mm-dd with this day of the week. 
 
-    :param: numericDay
+    :param: numericDay(0-6)
     :return: YYYY-mm-dd
     :rtype: str
     
@@ -99,7 +99,7 @@ def getClosestDay(self,numericDay):
     distance2weekbehind = abs( today - weekBehind)
 
     if distance2weekbehind < distance2weekahead:
-        self.forecast_date = weekBehind.strftime("%Y-%m-%d")
+        forecast_date = weekBehind.strftime("%Y-%m-%d")
         return weekBehind.strftime("%Y-%m-%d") 
     return weekAhead.strftime("%Y-%m-%d") 
 

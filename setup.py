@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="chimeric-tools",
-  version="0.0.2",
+  version="0.0.4",
   author="WENXUAN YE",
   author_email="lehighwenxuanye@gmail.com",
   description="ComputationalUncertaintyLab/chimeric-tools",

@@ -3,6 +3,8 @@ README.md
 pyproject.toml
 setup.py
 src/chimeric_tools/Constant.py
+src/chimeric_tools/Data.py
+src/chimeric_tools/Metaculus.py
 src/chimeric_tools/Prepocess.py
 src/chimeric_tools/Spatial.py
 src/chimeric_tools/Time.py
