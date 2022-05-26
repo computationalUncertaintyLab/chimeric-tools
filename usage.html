@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-chimeric_tools.Prepocess">Prepocess</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#spatial">Spatial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#time">Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data">Data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
@@ -289,6 +290,108 @@
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Time</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Time</span><span class="o">.</span><span class="n">fromDates2Epiweeks</span><span class="p">([</span><span class="s2">&quot;2020-01-22&quot;</span><span class="p">,</span><span class="s2">&quot;2020-02-23&quot;</span><span class="p">,</span><span class="s2">&quot;2020-03-24&quot;</span><span class="p">])</span>
 <span class="go">[4, 9, 13]</span>
+</pre></div>
+</div>
+</section>
+<section id="data">
+<h2>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+<p>Contains some fuctions to crawl data from the Epidata and generate dataframes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.crawl_data_to_feature_specific">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">crawl_data_to_feature_specific</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startepiweek</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endepiweek</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.crawl_data_to_feature_specific" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function crawls data from the delphi epidata API and stores it in a csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>startepiweek</strong> – the first epiweek to crawl</p></li>
+<li><p><strong>endepiweek</strong> – the last epiweek to crawl</p></li>
+<li><p><strong>regions</strong> – the list of regions to crawl</p></li>
+</ul>
+</dd>
+</dl>
+<p>return: a dataframe of the data</p>
+</dd></dl>
+
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">crawl_data_to_feature_specific</span><span class="p">(</span><span class="mi">201201</span><span class="p">,</span> <span class="mi">202201</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nat&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.crawl_data_to_feature_all">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">crawl_data_to_feature_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startepiweek</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endepiweek</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.crawl_data_to_feature_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function crawls data from the delphi epidata API and stores it in a feather file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>startepiweek</strong> – the first epiweek to crawl</p></li>
+<li><p><strong>endepiweek</strong> – the last epiweek to crawl</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dataframe of all the data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">crawl_data_to_feature_all</span><span class="p">(</span><span class="n">startepiweek</span><span class="p">,</span> <span class="n">endepiweek</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">crawl_data_to_feature_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startepiweek</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endepiweek</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function crawls data from the delphi epidata API and stores it in a feather file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>startepiweek</strong> – the first epiweek to crawl</p></li>
+<li><p><strong>endepiweek</strong> – the last epiweek to crawl</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dataframe of all the data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">crawl_data_to_feature_all</span><span class="p">(</span><span class="n">startepiweek</span><span class="p">,</span> <span class="n">endepiweek</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.randomly_select_fluseason">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">randomly_select_fluseason</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probobilility_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">season_features_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.randomly_select_fluseason" title="Permalink to this definition">¶</a></dt>
+<dd><p>randomly select a flu season based on the probability_dic
+:param probobilility_dic: the probability_dic
+:param season_features_path: the path to the season_features
+:return: the selected season DataFrame</p>
+</dd></dl>
+
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">randomly_select_fluseason</span><span class="p">(</span><span class="n">probobilility_dic</span><span class="p">,</span><span class="n">season_features_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.random_generate_fluseason">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">random_generate_fluseason</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startyear</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endyear</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.random_generate_fluseason" title="Permalink to this definition">¶</a></dt>
+<dd><p>randomly generate a flu season</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>startyear</strong> – the start year of the flu season</p></li>
+<li><p><strong>endyear</strong> – the end year of the flu season</p></li>
+<li><p><strong>features</strong> – the features of the flu season</p></li>
+<li><p><strong>regions</strong> – the list of regions to generate the flu season[0,1]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the dataframe generated flu season</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">random_generate_fluseason</span><span class="p">(</span><span class="n">startyear</span><span class="p">,</span><span class="n">endyear</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">regions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
