@@ -66,6 +66,42 @@ Contains some fuctions that can be used to show the epiweeks info.
 [4, 9, 13]
 
 
+Data 
+---------------------------
+Contains some fuctions to crawl data from the Epidata and generate dataframes.
+
+.. autofunction:: chimeric_tools.Data.crawl_data_to_feature_specific(startepiweek, endepiweek, regions)
+
+>>> from chimeric_tools import Data
+>>> Data.crawl_data_to_feature_specific(201201, 202201, ['nat'])
+
+.. autofunction:: chimeric_tools.Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+
+>>> from chimeric_tools import Data
+>>> Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+
+
+.. autofunction:: chimeric_tools.Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+
+>>> from chimeric_tools import Data
+>>> Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+
+.. autofunction:: chimeric_tools.Data.randomly_select_fluseason(probobilility_dic,season_features_path)
+
+
+>>> from chimeric_tools import Data
+>>> Data.randomly_select_fluseason(probobilility_dic,season_features_path)
+
+.. autofunction:: chimeric_tools.Data.random_generate_fluseason(startyear,endyear,features,regions=None)
+
+>>> from chimeric_tools import Data
+>>> Data.random_generate_fluseason(startyear,endyear,features,regions=None)
+
+
+
+
+
+
 .. Module contents
 .. ---------------
 

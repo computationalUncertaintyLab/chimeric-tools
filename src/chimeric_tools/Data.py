@@ -1,15 +1,17 @@
 # Written by:Wenxuan Ye in 2022/05/07
 
 
-def crawl_data_to_csv(startepiweek, endepiweek, regions):
-    """
-    Crawl data from metaculus and save it to features file.
-    :param startepiweek: the start epiweek
-    :param endepiweek: the end epiweek
-    :param regions: the regions to crawl
-    :return: features file
-    """
 
+def crawl_data_to_feature_specific(startepiweek, endepiweek, regions):
+    '''
+    This function crawls data from the delphi epidata API and stores it in a csv file.
+
+    :param startepiweek: the first epiweek to crawl
+    :param endepiweek: the last epiweek to crawl
+    :param regions: the list of regions to crawl
+
+    return: a dataframe of the data
+    '''
     import pandas as pd
     from delphi_epidata import Epidata
     region_dic={
@@ -26,7 +28,9 @@ def crawl_data_to_csv(startepiweek, endepiweek, regions):
         'hhs10':10,
 
     }
-    res = Epidata.fluview([regions], [Epidata.range(startepiweek, endepiweek)])
+
+    filename = regions[0]+'_'+str(startepiweek)+'_'+str(endepiweek)+'.feather'
+    res = Epidata.fluview(regions, [Epidata.range(startepiweek, endepiweek)])
     epidata = res['epidata']
     df = pd.DataFrame(columns=['Season', 'Epidemic_week', 'HHS_region', 'wILI'])
     for i in epidata:   
@@ -37,13 +41,37 @@ def crawl_data_to_csv(startepiweek, endepiweek, regions):
         if int(Week) <= 20:
             preYear = int(Year) - 1
             Season = str(preYear) + "/" + str(Year)
-        else:
+        elif int(Week) >= 40:
             Season = str(Year) + "/" + str(int(Year) + 1)
-
+        else:
+            continue
         df = df.append({'Season': Season, 'Epidemic_week': epiWeek, 'HHS_region': region_dic[i['region']], 'wILI': i['wili']}, ignore_index=True)
-
+    df = df.sort_values(by=['Epidemic_week','HHS_region']).reset_index(drop=True)
     # store the data as feather
-    df.to_feather(regions + '_' + str(startepiweek) + '_' + str(endepiweek) + '.feather')
+    df.to_feather(filename)
+    return df
+
+def crawl_data_to_feature_all(startepiweek, endepiweek):
+    '''
+    This function crawls data from the delphi epidata API and stores it in a feather file.
+
+    :param startepiweek: the first epiweek to crawl
+    :param endepiweek: the last epiweek to crawl   
+    :return: a dataframe of all the data
+
+    '''
+    import pandas as pd
+    from delphi_epidata import Epidata
+    regions = ['nat','hhs1','hhs2','hhs3','hhs4','hhs5','hhs6','hhs7','hhs8','hhs9','hhs10']
+    df = pd.DataFrame(columns=['Season', 'Epidemic_week', 'HHS_region', 'wILI'])
+    for i in regions:
+        df1 = crawl_data_to_feature_specific(startepiweek, endepiweek, [i])
+        df = pd.concat([df, df1], ignore_index=True)
+    df = df.sort_values(by=['Epidemic_week','HHS_region']).reset_index(drop=True)
+    # store the data as feather
+    df.to_feather('all_' + str(startepiweek) + '_' + str(endepiweek) + '.feather')
+    return df
+
 
 
 def randomly_select_fluseason(probobilility_dic,season_features_path):
