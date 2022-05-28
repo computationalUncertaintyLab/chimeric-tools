@@ -308,14 +308,17 @@
 <li><p><strong>regions</strong> – the list of regions to crawl(e.g. [‘nat’,’hhs1’,’hhs2’,’hhs3’,’hhs4’,’hhs5’,’hhs6’,’hhs7’,’hhs8’,’hhs9’,’hhs10’])</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dataframe of the data</p>
+</dd>
 </dl>
-<p>return: a dataframe of the data</p>
 </dd></dl>
 
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">crawl_data_to_feature_specific</span><span class="p">(</span><span class="mi">201201</span><span class="p">,</span> <span class="mi">202201</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nat&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">crawl_data_to_feature_specific</span><span class="p">(</span><span class="mi">201440</span><span class="p">,</span> <span class="mi">201510</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nat&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
+<a class="reference internal image-reference" href="_images/crawl_specific.png"><img alt="_images/crawl_specific.png" class="align-left" src="_images/crawl_specific.png" style="width: 300px;" /></a>
 <dl class="py function">
 <dt class="sig sig-object py" id="chimeric_tools.Data.crawl_data_to_feature_all">
 <span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">crawl_data_to_feature_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startepiweek</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endepiweek</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.crawl_data_to_feature_all" title="Permalink to this definition">¶</a></dt>
@@ -328,20 +331,20 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a dataframe of all the data</p>
+<dd class="field-even"><p>A dataframe of all the data</p>
 </dd>
 </dl>
 </dd></dl>
 
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools</span> <span class="kn">import</span> <span class="n">Data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">crawl_data_to_feature_all</span><span class="p">(</span><span class="n">startepiweek</span><span class="p">,</span> <span class="n">endepiweek</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">crawl_data_to_feature_all</span><span class="p">(</span><span class="mi">200901</span><span class="p">,</span> <span class="mi">202218</span><span class="p">)</span>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/crawl_all.png"><img alt="_images/crawl_all.png" class="align-left" src="_images/crawl_all.png" style="width: 300px;" /></a>
 <dl class="py function">
 <dt class="sig sig-object py" id="chimeric_tools.Data.randomly_select_fluseason">
 <span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">randomly_select_fluseason</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probobilility_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">season_features_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.randomly_select_fluseason" title="Permalink to this definition">¶</a></dt>
-<dd><p>randomly select a flu season based on the probability_dic</p>
+<dd><p>Randomly select a flu season based on the probability_dic, the value of the probability_dic should be sum to 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -350,7 +353,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the selected season DataFrame</p>
+<dd class="field-even"><p>The selected season DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -359,10 +362,11 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">randomly_select_fluseason</span><span class="p">({</span><span class="s2">&quot;2010/2011&quot;</span><span class="p">:</span><span class="mf">0.9</span><span class="p">,</span><span class="s2">&quot;2011/2012&quot;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">},</span><span class="n">season_features_path</span><span class="p">)</span>
 </pre></div>
 </div>
+<a class="reference internal image-reference" href="_images/random_select_season.png"><img alt="_images/random_select_season.png" class="align-left" src="_images/random_select_season.png" style="width: 300px;" /></a>
 <dl class="py function">
 <dt class="sig sig-object py" id="chimeric_tools.Data.random_generate_fluseason">
 <span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">random_generate_fluseason</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startyear</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endyear</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.random_generate_fluseason" title="Permalink to this definition">¶</a></dt>
-<dd><p>randomly generate a flu season</p>
+<dd><p>Randomly generate a flu season</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -382,6 +386,7 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Data</span><span class="o">.</span><span class="n">random_generate_fluseason</span><span class="p">(</span><span class="n">startyear</span><span class="p">,</span><span class="n">endyear</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">regions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
+<a class="reference internal image-reference" href="_images/random_generate_season.png"><img alt="_images/random_generate_season.png" class="align-left" src="_images/random_generate_season.png" style="width: 300px;" /></a>
 </section>
 </section>
 
