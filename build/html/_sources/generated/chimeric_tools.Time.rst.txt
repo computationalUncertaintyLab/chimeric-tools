@@ -15,6 +15,7 @@
    
       fromDate2Epiweek
       fromDates2Epiweeks
+      getClosestDay
       todayEpiWeek
    
    

@@ -80,17 +80,14 @@ Contains some fuctions to crawl data from the Epidata and generate dataframes.
 >>> from chimeric_tools import Data
 >>> Data.crawl_data_to_feature_all(startepiweek, endepiweek)
 
-
-.. autofunction:: chimeric_tools.Data.crawl_data_to_feature_all(startepiweek, endepiweek)
-
->>> from chimeric_tools import Data
->>> Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+.. image:: img/crawl_all.png
+  :width: 300
+  :align: left
 
 .. autofunction:: chimeric_tools.Data.randomly_select_fluseason(probobilility_dic,season_features_path)
 
-
 >>> from chimeric_tools import Data
->>> Data.randomly_select_fluseason(probobilility_dic,season_features_path)
+>>> Data.randomly_select_fluseason({"2010/2011":0.9,"2011/2012":0.1},season_features_path)
 
 .. autofunction:: chimeric_tools.Data.random_generate_fluseason(startyear,endyear,features,regions=None)
 

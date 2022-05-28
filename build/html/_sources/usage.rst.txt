@@ -66,10 +66,43 @@ Contains some fuctions that can be used to show the epiweeks info.
 [4, 9, 13]
 
 
-Module contents
----------------
+Data 
+---------------------------
+Contains some fuctions to crawl data from the Epidata and generate dataframes.
 
-.. automodule:: chimeric_tools
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autofunction:: chimeric_tools.Data.crawl_data_to_feature_specific(startepiweek, endepiweek, regions)
+
+>>> from chimeric_tools import Data
+>>> Data.crawl_data_to_feature_specific(201201, 202201, ['nat'])
+
+.. autofunction:: chimeric_tools.Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+
+>>> from chimeric_tools import Data
+>>> Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+
+.. image:: img/crawl_all.png
+  :width: 300
+  :align: left
+
+.. autofunction:: chimeric_tools.Data.randomly_select_fluseason(probobilility_dic,season_features_path)
+
+>>> from chimeric_tools import Data
+>>> Data.randomly_select_fluseason({"2010/2011":0.9,"2011/2012":0.1},season_features_path)
+
+.. autofunction:: chimeric_tools.Data.random_generate_fluseason(startyear,endyear,features,regions=None)
+
+>>> from chimeric_tools import Data
+>>> Data.random_generate_fluseason(startyear,endyear,features,regions=None)
+
+
+
+
+
+
+.. Module contents
+.. ---------------
+
+.. .. automodule:: chimeric_tools
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:

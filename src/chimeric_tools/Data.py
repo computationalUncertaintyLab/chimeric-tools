@@ -4,11 +4,11 @@
 
 def crawl_data_to_feature_specific(startepiweek, endepiweek, regions):
     '''
-    This function crawls data from the delphi epidata API and stores it in a csv file.
+    This function crawls data using the delphi epidata API from specific regions and stores it in a feature file.
 
     :param startepiweek: the first epiweek to crawl
     :param endepiweek: the last epiweek to crawl
-    :param regions: the list of regions to crawl
+    :param regions: the list of regions to crawl(e.g. ['nat','hhs1','hhs2','hhs3','hhs4','hhs5','hhs6','hhs7','hhs8','hhs9','hhs10'])
 
     return: a dataframe of the data
     '''
@@ -53,7 +53,7 @@ def crawl_data_to_feature_specific(startepiweek, endepiweek, regions):
 
 def crawl_data_to_feature_all(startepiweek, endepiweek):
     '''
-    This function crawls data from the delphi epidata API and stores it in a feather file.
+    This function crawls data using the delphi epidata API from all regions and stores it in a feather file.
 
     :param startepiweek: the first epiweek to crawl
     :param endepiweek: the last epiweek to crawl   
@@ -77,6 +77,7 @@ def crawl_data_to_feature_all(startepiweek, endepiweek):
 def randomly_select_fluseason(probobilility_dic,season_features_path):
     '''
     randomly select a flu season based on the probability_dic
+
     :param probobilility_dic: the probability_dic
     :param season_features_path: the path to the season_features
     :return: the selected season DataFrame
