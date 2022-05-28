@@ -73,12 +73,16 @@ Contains some fuctions to crawl data from the Epidata and generate dataframes.
 .. autofunction:: chimeric_tools.Data.crawl_data_to_feature_specific(startepiweek, endepiweek, regions)
 
 >>> from chimeric_tools import Data
->>> Data.crawl_data_to_feature_specific(201201, 202201, ['nat'])
+>>> Data.crawl_data_to_feature_specific(201440, 201510, ['nat'])
+
+.. image:: img/crawl_specific.png
+  :width: 300
+  :align: left
 
 .. autofunction:: chimeric_tools.Data.crawl_data_to_feature_all(startepiweek, endepiweek)
 
 >>> from chimeric_tools import Data
->>> Data.crawl_data_to_feature_all(startepiweek, endepiweek)
+>>> Data.crawl_data_to_feature_all(200901, 202218)
 
 .. image:: img/crawl_all.png
   :width: 300
@@ -89,10 +93,18 @@ Contains some fuctions to crawl data from the Epidata and generate dataframes.
 >>> from chimeric_tools import Data
 >>> Data.randomly_select_fluseason({"2010/2011":0.9,"2011/2012":0.1},season_features_path)
 
+.. image:: img/random_select_season.png
+  :width: 300
+  :align: left
+
 .. autofunction:: chimeric_tools.Data.random_generate_fluseason(startyear,endyear,features,regions=None)
 
 >>> from chimeric_tools import Data
 >>> Data.random_generate_fluseason(startyear,endyear,features,regions=None)
+
+.. image:: img/random_generate_season.png
+  :width: 300
+  :align: left
 
 
 

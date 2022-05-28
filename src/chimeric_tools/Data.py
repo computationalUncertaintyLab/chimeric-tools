@@ -10,7 +10,7 @@ def crawl_data_to_feature_specific(startepiweek, endepiweek, regions):
     :param endepiweek: the last epiweek to crawl
     :param regions: the list of regions to crawl(e.g. ['nat','hhs1','hhs2','hhs3','hhs4','hhs5','hhs6','hhs7','hhs8','hhs9','hhs10'])
 
-    return: a dataframe of the data
+    :return: A dataframe of the data
     '''
     import pandas as pd
     from delphi_epidata import Epidata
@@ -57,7 +57,7 @@ def crawl_data_to_feature_all(startepiweek, endepiweek):
 
     :param startepiweek: the first epiweek to crawl
     :param endepiweek: the last epiweek to crawl   
-    :return: a dataframe of all the data
+    :return: A dataframe of all the data
 
     '''
     import pandas as pd
@@ -76,11 +76,11 @@ def crawl_data_to_feature_all(startepiweek, endepiweek):
 
 def randomly_select_fluseason(probobilility_dic,season_features_path):
     '''
-    randomly select a flu season based on the probability_dic
+    Randomly select a flu season based on the probability_dic, the value of the probability_dic should be sum to 1.
 
     :param probobilility_dic: the probability_dic
     :param season_features_path: the path to the season_features
-    :return: the selected season DataFrame
+    :return: The selected season DataFrame
     
     '''
     import random
@@ -99,7 +99,7 @@ def randomly_select_fluseason(probobilility_dic,season_features_path):
 
 def random_generate_fluseason(startyear,endyear,features,regions=None):
     '''
-    randomly generate a flu season
+    Randomly generate a flu season
 
     :param startyear: the start year of the flu season
     :param endyear: the end year of the flu season
