@@ -128,7 +128,6 @@ def random_generate_fluseason(startyear,endyear,features,regions=None):
             continue
     year33_prob = len(year33_count)/(len(year33_count)+len(year34_count))
     year34_prob = len(year34_count)/(len(year33_count)+len(year34_count))
-    print(year33_prob,year34_prob)
     random_year = np.random.choice([33,34],1,p=[year33_prob,year34_prob])[0]
     def get_season(is33year,yearlist,df):
         teamdf = pd.DataFrame(columns=['HHSRegion','EpidemicWeek','Season','wILI'])
