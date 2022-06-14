@@ -25,3 +25,8 @@ class COVID():
     def download_data(self, geo_type: str, geo_values: Union[str, Iterable[str]], start_day: Optional[date], end_day: Optional[date]) -> None:
         from chimeric_tools import Data
         return Data.get_covid_data(geo_type, geo_values, start_day, end_day)
+
+    def moving_average(self, data: pd.Series, window: int) -> pd.Series:
+        return data.rolling(window=window).mean()
+
+    

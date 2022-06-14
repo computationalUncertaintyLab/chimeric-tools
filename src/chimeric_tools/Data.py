@@ -193,7 +193,7 @@ def get_covid_data(geo_type: str, geo_values: Union[str, Iterable[str]], start_d
 
 
     data = covidcast.signal(data_source = "jhu-csse",
-                            signal      = "confirmed_cumulative_num",
+                            signal      = "confirmed_incidence_num",
                             geo_type    = geo_type,
                             geo_values  = geo_values,
                             start_day   = start_day,
@@ -202,4 +202,32 @@ def get_covid_data(geo_type: str, geo_values: Union[str, Iterable[str]], start_d
     df = data[ ["time_value","geo_value","value"]  ]
     df = df.rename(columns={"geo_value":"location", "time_value":"date"})
 
-    return df
+    from epiweeks import Week
+   
+    unique_dates = data.date.unique()
+
+    fromDate2EW = { "date":[], "start_date":[], "end_date":[], "EW":[] }
+    for date in unique_dates:
+        fromDate2EW["date"].append(date)
+
+        dt = pd.to_datetime(date)
+        week = Week.fromdate(dt)
+
+        startdate = week.startdate()
+        fromDate2EW["start_date"].append( startdate )
+
+        enddate = week.enddate()
+        fromDate2EW["end_date"].append( enddate )
+
+        fromDate2EW["EW"].append( week.cdcformat() )
+    fromDate2EW = pd.DataFrame(fromDate2EW)
+
+    data = data.merge(fromDate2EW, on = ["date"])
+
+    def aggregate(x):
+        cases =  x.value.sum()
+
+        return pd.Series({"cases":cases})
+        
+    weekly_date = data.groupby( ["location", "location_name", "start_date", "end_date", "EW"]).apply(aggregate)
+    weekly_date.reset_index().to_feather("covid_cases.feather")
