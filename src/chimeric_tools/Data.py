@@ -1,5 +1,7 @@
 # Written by:Wenxuan Ye in 2022/05/07
 
+from typing import Optional, Union, Iterable
+from datetime import date
 
 
 def crawl_data_to_feature_specific(startepiweek, endepiweek, regions):
@@ -163,3 +165,76 @@ def random_generate_fluseason(startyear,endyear,features,regions=None):
         df = get_season(False,year34_count,features)
     return df
     
+
+
+
+def get_covid_data(geo_type: str, geo_values: Union[str, Iterable[str]], start_day: Optional[date], end_day: Optional[date]) -> None:
+    '''
+    Gets covid data from Delphi API
+
+    :param geo_type: the type of the geo value
+    :param geo_value: the value of the geo
+    :param start_date: the start date of the data
+    :param end_date: the end date of the data
+    :return: the dataframe of the covid data
+    
+    '''
+
+    import pandas as pd
+    import covidcast
+
+    # --checking inputs 
+    if not(geo_type =='state' or geo_type == 'county'):
+        raise Exception("geo_type must be 'state' or 'county'")
+    if start_day == None:
+        start_day = date(2020,1,22)
+
+
+
+    data = covidcast.signal(data_source = "jhu-csse",
+                            signal      = "confirmed_incidence_num",
+                            geo_type    = geo_type,
+                            geo_values  = geo_values,
+                            start_day   = start_day,
+                            end_day     = end_day)
+
+    df = data[ ["time_value","geo_value","value"]  ]
+    df = df.rename(columns={"geo_value":"location", "time_value":"date"})
+    return df
+
+def daily_to_weekly(data):
+    '''
+    Converts the daily data to weekly data
+        
+    df must be in format [ date, location, location_name,  value]
+    '''
+    import pandas as pd
+    from epiweeks import Week
+   
+    unique_dates = data.date.unique()
+
+    fromDate2EW = { "date":[], "start_date":[], "end_date":[], "EW":[] }
+    for date in unique_dates:
+        fromDate2EW["date"].append(date)
+
+        dt = pd.to_datetime(date)
+        week = Week.fromdate(dt)
+
+        startdate = week.startdate()
+        fromDate2EW["start_date"].append( startdate )
+
+        enddate = week.enddate()
+        fromDate2EW["end_date"].append( enddate )
+
+        fromDate2EW["EW"].append( week.cdcformat() )
+    fromDate2EW = pd.DataFrame(fromDate2EW)
+
+    data = data.merge(fromDate2EW, on = ["date"])
+
+    def aggregate(x):
+        cases =  x.value.sum()
+
+        return pd.Series({"cases":cases})
+        
+    weekly_date = data.groupby( ["location", "location_name", "start_date", "end_date", "EW"]).apply(aggregate)
+    weekly_date.reset_index().to_feather("covid_cases.feather")
