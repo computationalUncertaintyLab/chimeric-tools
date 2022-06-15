@@ -231,3 +231,41 @@ def get_covid_data(geo_type: str, geo_values: Union[str, Iterable[str]], start_d
         
     weekly_date = data.groupby( ["location", "location_name", "start_date", "end_date", "EW"]).apply(aggregate)
     weekly_date.reset_index().to_feather("covid_cases.feather")
+
+
+    def from_daily_to_weekly(df):
+        '''
+        Converts the daily data to weekly data
+
+        df must be in format [ date, location, location_name,  value]
+        '''
+        import pandas as pd
+        from epiweeks import Week
+        
+        unique_dates = data.date.unique()
+
+        fromDate2EW = { "date":[], "start_date":[], "end_date":[], "EW":[] }
+        for date in unique_dates:
+            fromDate2EW["date"].append(date)
+
+            dt = pd.to_datetime(date)
+            week = Week.fromdate(dt)
+
+            startdate = week.startdate()
+            fromDate2EW["start_date"].append( startdate )
+
+            enddate = week.enddate()
+            fromDate2EW["end_date"].append( enddate )
+
+            fromDate2EW["EW"].append( week.cdcformat() )
+        fromDate2EW = pd.DataFrame(fromDate2EW)
+
+        data = data.merge(fromDate2EW, on = ["date"])
+
+        def aggregate(x):
+            cases =  x.value.sum()
+
+            return pd.Series({"cases":cases})
+            
+        weekly_date = data.groupby( ["location", "location_name", "start_date", "end_date", "EW"]).apply(aggregate)
+        weekly_date = weekly_date.reset_index()

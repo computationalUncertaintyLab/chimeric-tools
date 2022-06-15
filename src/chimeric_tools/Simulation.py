@@ -26,7 +26,43 @@ class COVID():
         from chimeric_tools import Data
         return Data.get_covid_data(geo_type, geo_values, start_day, end_day)
 
-    def moving_average(self, data: pd.Series, window: int) -> pd.Series:
-        return data.rolling(window=window).mean()
+
+    def NBB(self, x, block_size: int = 5) -> list:
+        """
+        Non-overlapping Block Bootstrap
+        """
+        n = len(x)
+        # check length of x 
+        overflow_len = n % block_size
+        if overflow_len != 0:
+            x = x[:-overflow_len]
+        n_blocks = int(n/block_size)
+        blocks = np.array_split(x, n_blocks)
+        d = []
+        # randomly select n_blocks blocks from the list of blocks with replacement
+        for i in range(n_blocks+1):
+            d.append(blocks[np.random.randint(0, n_blocks)])
+        [x for xs in d for x in xs]
+        if overflow_len != 0:
+            return [x for xs in d for x in xs][:-(block_size - overflow_len)]
+        return [x for xs in d for x in xs]
+
+    def plot_sim(self, actuals, pred, residuals, iterations: int, block_size: int = 5) -> None:
+        import matplotlib.pyplot as plt
+        from matplotlib.lines import Line2D
+        fig = plt.figure(figsize=(12,8), dpi=150)
+        for i in range(0,iterations):
+            d = self.NBB(residuals, block_size)
+            new =  pred + d
+            plt.plot(new, color='blue', alpha=0.05)
+        plt.plot(actuals, color='black')
+        plt.plot(pred, color='red')
+        colors = ['black', 'red', 'blue']
+        lines = [Line2D([0], [0], color=c) for c in colors]
+        labels = ['Actual', 'Prediction', 'NBB']
+        plt.legend(lines, labels)
+        plt.xlabel("Model Week")
+        plt.ylabel("Cases")
+        plt.show()
 
     
