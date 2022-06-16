@@ -27,25 +27,33 @@ class COVID():
         return Data.get_covid_data(geo_type, geo_values, start_day, end_day)
 
 
-    def NBB(self, x, block_size: int = 5) -> list:
+    def block_boostrap(x, block_size: int, overlap: int = 0) -> list:
         """
-        Non-overlapping Block Bootstrap
+        Block Bootstrap
+
+        Parameters
+        ----------
+        x : array_like 
+        block_size : int
+        overlap : int  when overlap = 0 then this becomes a non-moving block bootstrap
         """
-        n = len(x)
-        # check length of x 
-        overflow_len = n % block_size
-        if overflow_len != 0:
-            x = x[:-overflow_len]
-        n_blocks = int(n/block_size)
-        blocks = np.array_split(x, n_blocks)
+        # initialize the bootstrap array and the indices
+        blocks = []
+        start = 0
+        end = block_size
+        # if the block is going to go over the length of the array we stop
+        while end <= len(x):
+            blocks.append(x[start:end])
+            start += block_size - overlap
+            end += block_size - overlap
+        n_blocks = len(blocks)
+        overflow_len = len(x) - start
         d = []
         # randomly select n_blocks blocks from the list of blocks with replacement
         for i in range(n_blocks+1):
             d.append(blocks[np.random.randint(0, n_blocks)])
-        [x for xs in d for x in xs]
-        if overflow_len != 0:
-            return [x for xs in d for x in xs][:-(block_size - overflow_len)]
-        return [x for xs in d for x in xs]
+        # unpacks and chops end to correct length ( fun code :) )
+        return [x for xs in d for x in xs][:-(block_size - overflow_len)]
 
     def plot_sim(self, actuals, pred, residuals, iterations: int, block_size: int = 5) -> None:
         import matplotlib.pyplot as plt
