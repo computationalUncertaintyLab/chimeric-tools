@@ -50,17 +50,17 @@ class COVID():
         overflow_len = len(x) - start
         d = []
         # randomly select n_blocks blocks from the list of blocks with replacement
-        for i in range(n_blocks+1):
+        for _ in range(int((len(x)-overflow_len)/block_size)+1):
             d.append(blocks[np.random.randint(0, n_blocks)])
         # unpacks and chops end to correct length ( fun code :) )
         return [x for xs in d for x in xs][:-(block_size - overflow_len)]
 
-    def plot_sim(self, actuals, pred, residuals, iterations: int, block_size: int = 5) -> None:
+    def plot_sim(self, actuals, pred, residuals, iterations: int, block_size: int = 5, overlap: int = 0) -> None:
         import matplotlib.pyplot as plt
         from matplotlib.lines import Line2D
         fig = plt.figure(figsize=(12,8), dpi=150)
         for i in range(0,iterations):
-            d = self.NBB(residuals, block_size)
+            d = self.block_boostrap(residuals, block_size, overlap)
             new =  pred + d
             plt.plot(new, color='blue', alpha=0.05)
         plt.plot(actuals, color='black')
