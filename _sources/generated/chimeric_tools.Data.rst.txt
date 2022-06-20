@@ -15,8 +15,6 @@
    
       crawl_data_to_feature_all
       crawl_data_to_feature_specific
-      daily_to_weekly
-      get_covid_data
       random_generate_fluseason
       randomly_select_fluseason
    
