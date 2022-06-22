@@ -1,7 +1,4 @@
-from ipaddress import collapse_addresses
 import os.path
-from typing import Iterable, Optional, Union
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,7 +23,7 @@ def save_data(data: pd.DataFrame, path: str) -> None:
     """
     Saves the data to a feather file
     """
-    data.reset_index().to_feather(path)
+    data.to_feather(path)
 
 
 def load_data(path: str) -> pd.DataFrame:
@@ -49,8 +46,11 @@ class COVID:
             self.data = pd.DataFrame(
                 columns=["date", "location", "location_name", "value"]
             )
-
-        self.update_data()
+        missing = self.find_missing_geo_values()
+        if missing.size > 0:
+            self.update_data(missing)
+            save_data(self.data, DATA_PATH)
+        self.data = self.data.loc[self.data["location"].isin(geo_values)]
 
     def find_missing_geo_values(self):
         """
@@ -59,20 +59,29 @@ class COVID:
         locations = self.data["location"].unique()
         return self.geo_values[~np.isin(self.geo_values, locations)]
 
-    def update_data(self):
+    def update_data(self, missing_geo_values):
         """
         Downloads all geo values data that is not in not on file
         """
-        missing_geo_values = self.find_missing_geo_values()
-        county_values = missing_geo_values.loc[missing_geo_values.str.len >= 4]
-        state_values = missing_geo_values.loc[missing_geo_values.str.len < 4]
+        mask = np.array([True if len(_) >= 4 else False for _ in missing_geo_values])
+        county_values = missing_geo_values[mask]
+        state_values = missing_geo_values[~mask]
 
-        county = Data.get_covid_data(
-            geo_type="county", geo_values=county_values, start_day=None, end_day=None
-        )
-        state = Data.get_covid_data(
-            geo_type="state", geo_values=state_values, start_day=None, end_day=None
-        )
+        county = pd.DataFrame(columns=["date", "location", "location_name", "value"])
+        state = pd.DataFrame(columns=["date", "location", "location_name", "value"])
+
+        state_values = np.char.upper(state_values)
+        if len(county_values) > 0:
+            county = Data.get_covid_data(
+                geo_type="county",
+                geo_values=county_values,
+                start_day=None,
+                end_day=None,
+            )
+        if len(state_values) > 0:
+            state = Data.get_covid_data(
+                geo_type="state", geo_values=state_values, start_day=None, end_day=None
+            )
 
         self.data = pd.concat([self.data, county, state])
 
@@ -129,9 +138,9 @@ class COVID:
         """
 
         fig = plt.figure(figsize=(12, 8), dpi=150)
-        for i in range(0, iterations):
-            d = self.block_boostrap(residuals, block_size, overlap)
-            new = pred + d
+        for _ in range(0, iterations):
+            _d = self.block_boostrap(residuals, block_size, overlap)
+            new = pred + _d
             plt.plot(new, color="blue", alpha=0.05)
         plt.plot(actuals, color="black")
         plt.plot(pred, color="red")

@@ -246,8 +246,22 @@ def get_covid_data(
         end_day=end_day,
     )
 
-    df = data[["time_value", "geo_value", "value"]]
-    df = df.rename(columns={"geo_value": "location", "time_value": "date"})
+    if geo_type == "county":
+        # --configure df
+        df = data[["time_value", "geo_value", "value"]]
+        df = df.rename(columns={"geo_value": "location", "time_value": "date"})
+        df["location"] = df["location"].astype(int).astype(str)
+        df["location_name"] = covidcast.fips_to_name(df["location"])
+    else:
+        # --configure df
+        df = pd.DataFrame()
+        df["date"] = data["time_value"]
+        #df["location"] = [x[0:2] for x in covidcast.abbr_to_fips(data["geo_value"], ignore_case=True)]
+        df["location"] = data["geo_value"].apply(lambda x: x.upper())
+        df["location_name"] = covidcast.abbr_to_name(
+            data["geo_value"], ignore_case=True
+        )
+        df["value"] = data["value"]
     return df
 
 
