@@ -6,6 +6,7 @@ import os
 from typing import Optional, Union, Iterable
 from datetime import date
 import pandas as pd
+import numpy as np
 import covidcast
 from epiweeks import Week
 
@@ -19,21 +20,21 @@ def check_for_data(path: str) -> bool:
     return os.path.exists(path)
 
 
-def save_data(data: pd.DataFrame, path: str) -> None:
+def save_feather(data: pd.DataFrame, path: str) -> None:
     """
     Saves the data to a feather file
     """
     data.to_feather(path)
 
 
-def load_data(path: str) -> pd.DataFrame:
+def load_feather(path: str) -> pd.DataFrame:
     """
     Loads the data from a feather file
     """
     return pd.read_feather(path)
 
 
-def get_covid_data(
+def get_unique_covid_data(
     geo_type: str,
     geo_values: Union[str, Iterable[str]],
     start_day: Optional[date],
@@ -84,6 +85,9 @@ def get_covid_data(
     return df
 
 
+def get_time_locked_dat() {
+    
+}
 def daily_to_weekly(data):
     """
     Converts the daily data to weekly data
@@ -128,27 +132,22 @@ class CovidData:
     Class to Manage COVID Data
     """
 
-    def __init__(self, ]):
+    def __init__(self):
         """
         Initialize the COVID_DATA class
 
         """
-        if check_for_data(__DATA_PATH):
-            self.data = load_data(__DATA_PATH)
-        else:
-            self.data = pd.DataFrame(
-                columns=["date", "location", "location_name", "value"]
-            )
+        
 
 
-    def find_missing_geo_values(self):
+    def find_missing_geo_values(self, geo_values):
         """
         Finds the missing geo values in the data
         """
         locations = self.data["location"].unique()
-        return self.geo_values[~np.isin(self.geo_values, locations)]
+        return geo_values[~np.isin(geo_values, locations)]
 
-    def update_data(self, missing_geo_values):
+    def download_data(self, missing_geo_values):
         """
         Downloads all geo values data that is not in not on file
         """
@@ -161,14 +160,14 @@ class CovidData:
 
         state_values = np.char.upper(state_values)
         if len(county_values) > 0:
-            county = get_covid_data(
+            county = get_unique_covid_data(
                 geo_type="county",
                 geo_values=county_values,
                 start_day=None,
                 end_day=None,
             )
         if len(state_values) > 0:
-            state = Data.get_covid_data(
+            state = get_unique_covid_data(
                 geo_type="state", geo_values=state_values, start_day=None, end_day=None
             )
 

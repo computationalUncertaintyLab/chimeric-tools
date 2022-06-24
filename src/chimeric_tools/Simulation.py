@@ -57,13 +57,6 @@ class COVID:
         geo_values: Union[np.ndarray, Dict[str, float], int, None],
         seed: Union[None, int, Generator],
     ) -> None:
-        if check_for_data(DATA_PATH):
-            self.data = load_data(DATA_PATH)
-        else:
-            self.data = pd.DataFrame(
-                columns=["date", "location", "location_name", "value"]
-            )
-
         if isinstance(geo_values, np.ndarray):
             self.geo_values = geo_values
             self.p = None
