@@ -20,33 +20,9 @@ from chimeric_tools import Data
 import statsmodels.api as sm
 
 
-DATA_PATH = "./covid_data.feather"
 
 
-def check_for_data(path: str) -> bool:
-
-    """
-    Checks if there is covid data
-    """
-
-    return os.path.exists(path)
-
-
-def save_data(data: pd.DataFrame, path: str) -> None:
-    """
-    Saves the data to a feather file
-    """
-    data.to_feather(path)
-
-
-def load_data(path: str) -> pd.DataFrame:
-    """
-    Loads the data from a feather file
-    """
-    return pd.read_feather(path)
-
-
-class MODEL:
+class Model:
     """
     Just a quick and dirty test model
     """
@@ -100,17 +76,7 @@ class COVID:
         elif geo_values is None:
             self.geo_values = self.data["location"].unique()
             self.p = None
-        self.geo_values = geo_values
-        if check_for_data(DATA_PATH):
-            self.data = load_data(DATA_PATH)
-        else:
-            self.data = pd.DataFrame(
-                columns=["date", "location", "location_name", "value"]
-            )
-        missing = self.find_missing_geo_values()
-        if missing.size > 0:
-            self.update_data(missing)
-            save_data(self.data, DATA_PATH)
+        
 
         if isinstance(seed, Generator):
             self.generator = seed
@@ -124,38 +90,6 @@ class COVID:
                 "RandomState instance or an integer when used."
             )
 
-    def find_missing_geo_values(self):
-        """
-        Finds the missing geo values in the data
-        """
-        locations = self.data["location"].unique()
-        return self.geo_values[~np.isin(self.geo_values, locations)]
-
-    def update_data(self, missing_geo_values):
-        """
-        Downloads all geo values data that is not in not on file
-        """
-        mask = np.array([len(_) >= 4 for _ in missing_geo_values])
-        county_values = missing_geo_values[mask]
-        state_values = missing_geo_values[~mask]
-
-        county = pd.DataFrame(columns=["date", "location", "location_name", "value"])
-        state = pd.DataFrame(columns=["date", "location", "location_name", "value"])
-
-        state_values = np.char.upper(state_values)
-        if len(county_values) > 0:
-            county = Data.get_covid_data(
-                geo_type="county",
-                geo_values=county_values,
-                start_day=None,
-                end_day=None,
-            )
-        if len(state_values) > 0:
-            state = Data.get_covid_data(
-                geo_type="state", geo_values=state_values, start_day=None, end_day=None
-            )
-
-        self.data = pd.concat([self.data, county, state])
 
     def pick_geo_values(self, reps):
         """
