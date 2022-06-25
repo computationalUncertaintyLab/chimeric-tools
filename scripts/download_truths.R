@@ -1,3 +1,3 @@
 library(covidData)
 library(covidHubUtils)
-covidHubUtils::preprocess_jhu("../data")
+covidHubUtils::preprocess_jhu("../src/chimeric_tools/data")
