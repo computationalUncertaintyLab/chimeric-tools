@@ -172,6 +172,7 @@ class CovidData(object):
         self.data["location"] = self.data["location"].astype(str)
 
         if geo_values is None:
+            print("YES")
             self.geo_values = self.data["location"].unique()
         elif isinstance(geo_values, (str, list)):
             self.geo_values = np.array([geo_values])
@@ -208,14 +209,14 @@ class CovidData(object):
                     start_date=max_date + timedelta(days=1), end_date=self.end_date
                 )
                 self.data = pd.concat([self.data, loc_data])
-
-        self.data = daily_to_weekly(self.data)
+                model()
 
         mask = (
             (self.data["date"] >= self.start_date)
             | (self.data["date"] <= self.end_date)
-        ) & (self.data["location"].isin(geo_values))
+        ) & (self.data["location"].isin(self.geo_values))
         self.data = self.data.loc[mask]
+
 
     def create_file_hash(self):
         """

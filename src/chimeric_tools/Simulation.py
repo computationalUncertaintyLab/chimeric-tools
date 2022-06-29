@@ -26,9 +26,7 @@ class Model(object):
     """
 
     def __init__(self, data: pd.DataFrame):
-        self.data = np.array(data["value"][1:]).reshape(
-            -1,
-        )
+        self.data = np.array(data["value"])
         self.model = sm.tsa.statespace.SARIMAX(self.data, order=(2, 1, 0))
         self.result = self.model.fit(disp=0)
         self.preds = self.result.predict()
@@ -60,6 +58,9 @@ class COVID(object):
         elif isinstance(geo_values, str):
             self.geo_values = np.array([geo_values])
             self.p = None
+        elif geo_values is None:
+            self.geo_values = None
+            self.p = None
         self.data = CovidData(
             start_date=start_date,
             end_date=end_date,
@@ -68,7 +69,6 @@ class COVID(object):
         ).data
         if geo_values is None:
             self.geo_values = self.data["location"].unique()
-            self.p = None
 
         if isinstance(seed, Generator):
             self.generator = seed
@@ -81,21 +81,7 @@ class COVID(object):
                 "generator keyword argument must contain a NumPy Generator or "
                 "RandomState instance or an integer when used."
             )
-        self.model()
-
-    def model(self):
-        """
-        Adds predictions and residuals to the data
-        """
-        to_cat = pd.DataFrame(columns=["date", "location", "location_name", "value", "pred", "residual"])
-        for fip in self.geo_values:
-            sub_data = self.data[self.data["location"] == fip]
-            print(sub_data.shape)
-            model = Model(sub_data)
-            sub_data["pred"] = model.preds
-            sub_data["residual"] = model.residuals
-            to_cat = pd.concat([to_cat, sub_data])
-        self.data = to_cat
+    
 
     def pick_geo_values(self, reps):
         """

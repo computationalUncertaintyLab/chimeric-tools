@@ -1,0 +1,50 @@
+name: Covid Data Update
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest 
+    steps:
+
+    - name: Checkout chimeric-tools repo
+      uses: actions/checkout@v2
+      path: chimeric-tools
+
+
+    - name: Setup GitHub Action for R language
+      uses: r-lib/actions/setup-r@v1
+
+    - name: Install system dependencies
+      run: sudo apt-get install libudunits2-dev libcurl4-openssl-dev libgdal-dev
+      
+    - name: Install R dependencies (for covidData + covidHubUtils)
+      working-directory: ./chimeric-tools
+      run: Rscript scripts/install_dependencies.R
+
+    - name: Setup Python
+      uses: actions/checkout@v3
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip'
+      run: pip install -r requirements.txt
+
+    - name: Get data truths
+      working-directory: ./chimeric-tools
+      run: Rscript scripts/install_dependencies.R
+
+    - name: Make preds
+      working-directory: ./chimeric-tools
+      run: python3 scripts/make_preds.py
+
+  - name: Push generated files to GitHub
+      working-directory: ./covid19-forecast-hub
+      run: bash scripts/push-gh.sh
