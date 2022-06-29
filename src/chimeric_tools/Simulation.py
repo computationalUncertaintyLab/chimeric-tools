@@ -5,71 +5,70 @@ Simulate COVID data
 
 
 """
-import os.path
-from tkinter import Y
 from typing import (
     Dict,
+    Optional,
     Generator,
     Union,
 )
+from datetime import date
 import numpy as np
 import pandas as pd
-from arch.typing import ArrayLike1D
-from arch.bootstrap import CircularBlockBootstrap
-from chimeric_tools import Data
 import statsmodels.api as sm
+from chimeric_tools.data import CovidData
 
 
 
 
-class Model:
+class Model(object):
     """
     Just a quick and dirty test model
     """
 
     def __init__(self, data: pd.DataFrame):
-        self.data = np.array(data["value"][1:]).reshape(-1,)
+        self.data = np.array(data["value"][1:]).reshape(
+            -1,
+        )
         self.model = sm.tsa.statespace.SARIMAX(self.data, order=(2, 1, 0))
         self.result = self.model.fit(disp=0)
         self.preds = self.result.predict()
         self.residuals = self.result.resid
 
-    def get_preds(self):
-        """
-        Returns the predictions
-        """
-        return self.preds
 
-    def get_residuals(self):
-        """
-        Returns the residuals
-        """
-        return self.residuals
-
-
-class COVID:
+class COVID(object):
     """
     Covid simulation class
     """
 
     def __init__(
         self,
-        geo_values: Union[np.ndarray, Dict[str, float], int, None],
-        seed: Union[None, int, Generator],
+        start_date: Union[date, None] = None,
+        end_date: Union[date, None] = None,
+        geo_values: Union[np.ndarray, Dict[str, float], str, None] = None,
+        custom_data: Optional[pd.DataFrame] = None,
+        seed: Union[None, int, Generator] = None,
     ) -> None:
+
+        self.start_date = start_date
+        self.end_date = end_date
         if isinstance(geo_values, np.ndarray):
             self.geo_values = geo_values
             self.p = None
         elif isinstance(geo_values, dict):
             self.geo_values = np.array(list(geo_values.keys()))
             self.p = np.array(list(geo_values.values()))
-        elif isinstance(geo_values, int):
+        elif isinstance(geo_values, str):
             self.geo_values = np.array([geo_values])
             self.p = None
-        elif geo_values is None:
+        self.data = CovidData(
+            start_date=start_date,
+            end_date=end_date,
+            geo_values=self.geo_values,
+            custom_data=custom_data,
+        ).data
+        if geo_values is None:
             self.geo_values = self.data["location"].unique()
             self.p = None
-        
 
         if isinstance(seed, Generator):
             self.generator = seed
@@ -82,7 +81,21 @@ class COVID:
                 "generator keyword argument must contain a NumPy Generator or "
                 "RandomState instance or an integer when used."
             )
+        self.model()
 
+    def model(self):
+        """
+        Adds predictions and residuals to the data
+        """
+        to_cat = pd.DataFrame(columns=["date", "location", "location_name", "value", "pred", "residual"])
+        for fip in self.geo_values:
+            sub_data = self.data[self.data["location"] == fip]
+            print(sub_data.shape)
+            model = Model(sub_data)
+            sub_data["pred"] = model.preds
+            sub_data["residual"] = model.residuals
+            to_cat = pd.concat([to_cat, sub_data])
+        self.data = to_cat
 
     def pick_geo_values(self, reps):
         """

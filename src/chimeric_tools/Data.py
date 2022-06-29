@@ -4,7 +4,7 @@ Classes to keep data up to date
 """
 import os
 from typing import Optional, Union, Iterable
-from datetime import date, datetime
+from datetime import date, timedelta
 import io
 import warnings
 import pandas as pd
@@ -127,22 +127,21 @@ def daily_to_weekly(data):
     weekly_date = data.groupby(
         ["location", "location_name", "start_date", "end_date", "EW"]
     ).apply(aggregate)
-    weekly_date.reset_index().to_feather("covid_cases.feather")
+    return weekly_date
 
 
-DATA_PATH = "./data/truth-Incident Cases.csv"
 DATA_URL = "https://raw.githubusercontent.com/computationalUncertaintyLab/chimeric-tools/abe_sim/src/chimeric_tools/data/truth-Incident%20Cases.csv"
 
 
-class CovidData:
+class CovidData(object):
     """
     Class to Manage COVID Data
     """
 
     def __init__(
         self,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        start_date: Union[date, None] = None,
+        end_date: Union[date, None] = None,
         geo_values: Union[np.ndarray, list, str, None] = None,
         custom_data: Optional[pd.DataFrame] = None,
     ):
@@ -150,6 +149,8 @@ class CovidData:
         Initialize the COVID_DATA class
 
         """
+
+        __DATA_PATH = os.path.dirname(__file__) + "/data/truth-Incident Cases.csv"
 
         if isinstance(custom_data, pd.DataFrame):
             if custom_data.empty:
@@ -160,16 +161,23 @@ class CovidData:
                 )
             self.data = custom_data
         else:
-            # if not check_for_data(DATA_PATH):
-            #     print(
-            #         "Downloading data...you must have gone out of you way to delete the data in lib :)"
-            #     )
-            #     get_raw_truth_df(DATA_URL).to_csv(DATA_PATH)
+            if not check_for_data(__DATA_PATH):
+                print(
+                    "Downloading data...you must have gone out of you way to delete the data in lib :)"
+                )
+                get_raw_truth_df(DATA_URL).to_csv(__DATA_PATH)
             self.data = load_stream()
+
         self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
         self.data["location"] = self.data["location"].astype(str)
 
-        print(self.data.dtypes)
+        if geo_values is None:
+            self.geo_values = self.data["location"].unique()
+        elif isinstance(geo_values, (str, list)):
+            self.geo_values = np.array([geo_values])
+        else:
+            self.geo_values = geo_values
+
         max_date = max(self.data["date"])
         min_date = min(self.data["date"])
 
@@ -180,12 +188,12 @@ class CovidData:
             self.start_date = min_date
         if self.end_date is None:
             self.end_date = max_date
-        if self.start_date <= min_date:
+        if self.start_date < min_date:
             warnings.warn(
                 "start_date is before the earliest date in the data. Now using default start date"
             )
             self.start_date = min_date
-        if self.end_date >= max_date:
+        if self.end_date > max_date:
             warnings.warn(
                 "end_date is after the latest date in the data. We will downlaod this data for you. It might take some time"
             )
@@ -196,21 +204,17 @@ class CovidData:
                 self.data = pd.read_csv("./data/" + self.file_hash + ".csv")
             else:
                 # loc data that we already have
-                pass
-                # --download the data
+                loc_data = self.download_data(
+                    start_date=max_date + timedelta(days=1), end_date=self.end_date
+                )
+                self.data = pd.concat([self.data, loc_data])
 
-        if geo_values is None:
-            self.geo_values = self.data["location"].unique()
-        elif isinstance(geo_values, (str, list)):
-            self.geo_values = np.array([geo_values])
-        else:
-            self.geo_values = geo_values
+        self.data = daily_to_weekly(self.data)
 
         mask = (
-            ((self.data["date"] >= self.start_date)
-            | (self.data["date"] <= self.end_date))
-            & (self.data["location"].isin(geo_values))
-        )
+            (self.data["date"] >= self.start_date)
+            | (self.data["date"] <= self.end_date)
+        ) & (self.data["location"].isin(geo_values))
         self.data = self.data.loc[mask]
 
     def create_file_hash(self):
@@ -220,36 +224,38 @@ class CovidData:
         self.geo_values.sort()
         hash_string = (
             "".join([str(i) for i in self.geo_values])
-            + (self.start_date)
-            + (self.end_date)
+            + (str(self.start_date))
+            + (str(self.end_date))
         )
-        return hash(hash_string)
+        return str(hash(hash_string))
 
-    def download_data(self):
+    def download_data(self, start_date: Optional[date], end_date: Optional[date]):
         """
         Downloads all geo values data that is not in not on file
         """
         mask = np.array([len(_) >= 4 for _ in self.geo_values])
         county_values = self.geo_values[mask]
-        state_values = self.geo_values[~mask]
+        state_values = covidcast.fips_to_abbr(self.geo_values[~mask])
 
         county = pd.DataFrame(columns=["date", "location", "location_name", "value"])
         state = pd.DataFrame(columns=["date", "location", "location_name", "value"])
 
         state_values = np.char.upper(state_values)
         if len(county_values) > 0:
+            print("Downloading county data")
             county = get_unique_covid_data(
                 geo_type="county",
                 geo_values=county_values,
-                start_day=self.start_date,
-                end_day=self.end_date,
+                start_day=start_date,
+                end_day=end_date,
             )
         if len(state_values) > 0:
+            print("Downloading state data")
             state = get_unique_covid_data(
                 geo_type="state",
                 geo_values=state_values,
-                start_day=self.start_date,
-                end_day=self.end_date,
+                start_day=start_date,
+                end_day=end_date,
             )
 
-        self.data = pd.concat([self.data, county, state])
+        return pd.concat([county, state])
