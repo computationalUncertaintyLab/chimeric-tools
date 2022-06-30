@@ -1,8 +1,6 @@
 name: Covid Data Update
 
-on:
-  schedule:
-  - cron: "0 0 * * 0"
+on: [push]
 jobs:
   Data:
 
