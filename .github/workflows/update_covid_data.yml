@@ -20,6 +20,17 @@ jobs:
     - name: Install system dependencies
       run: sudo apt-get install libudunits2-dev libcurl4-openssl-dev libgdal-dev
       
+    - name: Install R dependencies (dev-tools)
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        cache-version: 2
+        extra-packages: |
+          any::devtools
+          any::tidyverse
+          any::rvest
+          any::here
+          any::covidcast
+
     - name: Install R dependencies (for covidData + covidHubUtils)
       run: Rscript scripts/install_dependencies.R
       env:
