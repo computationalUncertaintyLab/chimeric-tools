@@ -23,7 +23,6 @@ jobs:
       run: sudo apt-get install libudunits2-dev libcurl4-openssl-dev libgdal-dev
       
     - name: Install R dependencies (for covidData + covidHubUtils)
-      working-directory: ./chimeric-tools
       run: Rscript scripts/install_dependencies.R
 
     - name: Python Set-Up
@@ -33,17 +32,13 @@ jobs:
         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
     
     - name: Install Python Requirements
-      working-directory: ./chimeric-tools
       run: pip3 install -r requirements.txt
 
     - name: Get data truths
-      working-directory: ./chimeric-tools
       run: Rscript scripts/install_dependencies.R
 
     - name: Make preds
-      working-directory: ./chimeric-tools
       run: python3 scripts/make_preds.py
 
     - name: Push generated files to GitHub
-      working-directory: ./chimeric-tools
       run: bash scripts/push-gh.sh
