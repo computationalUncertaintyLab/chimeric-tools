@@ -22,6 +22,8 @@ jobs:
       
     - name: Install R dependencies (for covidData + covidHubUtils)
       run: Rscript scripts/install_dependencies.R
+      env:
+        GITHUB_PAT: ${{ secrets.GH_TOKEN }}
 
     - name: Python Set-Up
       uses: actions/setup-python@v4
@@ -40,3 +42,5 @@ jobs:
 
     - name: Push generated files to GitHub
       run: bash scripts/push-gh.sh
+      env:
+        GITHUB_PAT: ${{ secrets.GH_TOKEN }}
