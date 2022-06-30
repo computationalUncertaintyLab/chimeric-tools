@@ -2,16 +2,18 @@ name: Covid Data Update
 
 on:
   schedule:
-    -cron: '0 16 * * 0'
+  - cron: "0 0 * * 0"
 jobs:
   Data:
 
     runs-on: ubuntu-latest 
     steps:
 
-    - name: Checkout chimeric-tools repo
+    - name: 🛎️ Checkout
       uses: actions/checkout@v2
-      path: chimeric-tools
+      with:
+        fetch-depth: 0  # fetch all history so that last modified date-times are accurate
+
 
 
     - name: Setup GitHub Action for R language
