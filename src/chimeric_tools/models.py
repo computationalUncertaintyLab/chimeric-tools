@@ -6,19 +6,12 @@ def model(data: pd.DataFrame):
     """
     Adds predictions and residuals to the data
     """
-    to_cat = pd.DataFrame(
-        columns=["date", "location", "location_name", "value", "pred", "residual"]
-    )
     for fip in data["location"].unique():
         sub_data = data.loc[data["location"] == fip]
-        print(sub_data.shape)
         m = ARIMA(sub_data)
-        sub_data["pred"] = m.preds
-        sub_data["residual"] = m.residuals
-        print(sub_data)
-        to_cat = pd.concat([to_cat, sub_data])
-        break
-    return to_cat
+        data.loc[data["location"] == fip,"pred"] = m.preds
+        data.loc[data["location"] == fip,"residual"] = m.residuals
+    return data
 
 
 class ARIMA():

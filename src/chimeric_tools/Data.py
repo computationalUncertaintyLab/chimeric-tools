@@ -13,6 +13,7 @@ import requests
 import pkg_resources
 import covidcast
 from epiweeks import Week
+from chimeric_tools.models import model
 
 
 def check_for_data(path: str) -> bool:
@@ -26,12 +27,32 @@ def check_for_data(path: str) -> bool:
     return os.path.exists(path)
 
 
-def load_stream():
+def load_truths():
     """
     Loads package data
     """
     stream = pkg_resources.resource_stream(__name__, "data/truth-Incident Cases.csv")
-    return pd.read_csv(stream)
+    data = pd.read_csv(stream)
+    data["location"] = data["location"].astype(str)
+    return data
+
+def load_daily_covid():
+    """
+    Loads the daily covid data
+    """
+    stream = pkg_resources.resource_stream(__name__, "data/daily_covid.csv.gz")
+    data = pd.read_csv(stream)
+    data["location"] = data["location"].astype(str)
+    return data
+
+def load_weekly_covid():
+    """
+    Loads the weekly covid data
+    """
+    stream = pkg_resources.resource_stream(__name__, "data/weekly_covid.csv.gz")
+    data = pd.read_csv(stream)
+    data["location"] = data["location"].astype(str)
+    return data
 
 
 def get_unique_covid_data(
@@ -97,7 +118,7 @@ def daily_to_weekly(data):
     """
     Converts the daily data to weekly data
 
-    df must be in format [ date, location, location_name,  value]
+    df must be in format [ date: date or str, location: str, location_name, str,  value: int or float]
     """
     unique_dates = data.date.unique()
 
@@ -127,7 +148,8 @@ def daily_to_weekly(data):
     weekly_date = data.groupby(
         ["location", "location_name", "start_date", "end_date", "EW"]
     ).apply(aggregate)
-    return weekly_date
+    weekly_date = weekly_date.reset_index()
+    return weekly_date.rename(columns={"start_date": "date", "cases": "value"})
 
 
 DATA_URL = "https://raw.githubusercontent.com/computationalUncertaintyLab/chimeric-tools/abe_sim/src/chimeric_tools/data/truth-Incident%20Cases.csv"
@@ -166,13 +188,12 @@ class CovidData(object):
                     "Downloading data...you must have gone out of you way to delete the data in lib :)"
                 )
                 get_raw_truth_df(DATA_URL).to_csv(__DATA_PATH)
-            self.data = load_stream()
+            self.data = load_weekly_covid()
 
         self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
         self.data["location"] = self.data["location"].astype(str)
 
         if geo_values is None:
-            print("YES")
             self.geo_values = self.data["location"].unique()
         elif isinstance(geo_values, (str, list)):
             self.geo_values = np.array([geo_values])
@@ -209,14 +230,13 @@ class CovidData(object):
                     start_date=max_date + timedelta(days=1), end_date=self.end_date
                 )
                 self.data = pd.concat([self.data, loc_data])
-                model()
+                self.data = model(self.data)
 
         mask = (
             (self.data["date"] >= self.start_date)
             | (self.data["date"] <= self.end_date)
         ) & (self.data["location"].isin(self.geo_values))
         self.data = self.data.loc[mask]
-
 
     def create_file_hash(self):
         """
