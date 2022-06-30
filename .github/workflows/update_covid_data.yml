@@ -1,12 +1,8 @@
 name: Covid Data Update
 
 on:
-  push:
-    branches: [ $default-branch ]
-  pull_request:
-    branches: [ $default-branch ]
-
-
+  schedule:
+    -cron: "0 1 * * 0"
 jobs:
   Data:
 
@@ -28,13 +24,15 @@ jobs:
       working-directory: ./chimeric-tools
       run: Rscript scripts/install_dependencies.R
 
-    - name: Setup Python
-      uses: actions/checkout@v3
+    - name: Python Set-Up
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
-        cache: 'pip'
-      run: pip install -r requirements.txt
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+    
+    - name: Install Python Requirements
+      working-directory: ./chimeric-tools
+      run: pip3 install -r requirements.txt
 
     - name: Get data truths
       working-directory: ./chimeric-tools
@@ -44,6 +42,6 @@ jobs:
       working-directory: ./chimeric-tools
       run: python3 scripts/make_preds.py
 
-  - name: Push generated files to GitHub
-      working-directory: ./covid19-forecast-hub
+    - name: Push generated files to GitHub
+      working-directory: ./chimeric-tools
       run: bash scripts/push-gh.sh
