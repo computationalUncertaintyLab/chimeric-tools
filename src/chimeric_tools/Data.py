@@ -41,7 +41,7 @@ def load_daily_covid():
     Loads the daily covid data
     """
     stream = pkg_resources.resource_stream(__name__, "data/daily_covid.csv.gz")
-    data = pd.read_csv(stream)
+    data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
 
@@ -50,7 +50,7 @@ def load_weekly_covid():
     Loads the weekly covid data
     """
     stream = pkg_resources.resource_stream(__name__, "data/weekly_covid.csv.gz")
-    data = pd.read_csv(stream)
+    data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
 

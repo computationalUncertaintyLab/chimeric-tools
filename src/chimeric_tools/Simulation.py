@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from chimeric_tools.data import CovidData
-
+from arch.bootstrap import CircularBlockBootstrap
 
 
 
@@ -88,8 +88,7 @@ class COVID(object):
         Picks the geo values to use
         """
         indices = self.generator.choice(
-            a=len(self.geo_values), size=reps, p=self.p, dtype=np.int64
-        )
+            a=len(self.geo_values), size=reps, p=self.p)
         return self.geo_values[indices]
 
     def simulate(self, reps):
@@ -99,4 +98,7 @@ class COVID(object):
         geo_for_sample = self.pick_geo_values(reps)
 
         for geo_value in geo_for_sample:
-            sub_data = self.data[self.data["location"] == geo_value]
+            sub_data = self.data[self.data["location"] == geo_value].reset_index()
+            bs = CircularBlockBootstrap(5, sub_data["residual"])
+            for data in bs.bootstrap(1):
+                return data[0][0].reset_index(drop=True) + sub_data["pred"]
