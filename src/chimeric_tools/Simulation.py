@@ -42,14 +42,14 @@ class COVID(object):
         self,
         start_date: Union[date, None] = None,
         end_date: Union[date, None] = None,
-        geo_values: Union[np.ndarray, Dict[str, float], str, None] = None,
+        geo_values: Union[np.ndarray, Dict[str, float], str, list, None] = None,
         custom_data: Optional[pd.DataFrame] = None,
         seed: Union[None, int, Generator] = None,
     ) -> None:
 
         self.start_date = start_date
         self.end_date = end_date
-        if isinstance(geo_values, np.ndarray):
+        if isinstance(geo_values, (np.ndarray, list)):
             self.geo_values = geo_values
             self.p = None
         elif isinstance(geo_values, dict):
@@ -89,7 +89,8 @@ class COVID(object):
         """
         indices = self.generator.choice(
             a=len(self.geo_values), size=reps, p=self.p)
-        return self.geo_values[indices]
+        return np.array([self.geo_values[x] for x in indices])
+
 
     def simulate(self, reps):
         """
@@ -101,4 +102,5 @@ class COVID(object):
             sub_data = self.data[self.data["location"] == geo_value].reset_index()
             bs = CircularBlockBootstrap(5, sub_data["residual"])
             for data in bs.bootstrap(1):
-                return data[0][0].reset_index(drop=True) + sub_data["pred"]
+                sim_data = (data[0][0]).reset_index(drop=True) + sub_data["pred"]
+                yield (sim_data, geo_value)

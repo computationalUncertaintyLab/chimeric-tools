@@ -195,7 +195,9 @@ class CovidData(object):
 
         if geo_values is None:
             self.geo_values = self.data["location"].unique()
-        elif isinstance(geo_values, (str, list)):
+        elif isinstance(geo_values, list):
+            self.geo_values = np.array(geo_values)
+        elif isinstance(geo_values, str):
             self.geo_values = np.array([geo_values])
         else:
             self.geo_values = geo_values
