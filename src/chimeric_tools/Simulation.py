@@ -14,28 +14,29 @@ from typing import (
 from datetime import date
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
 from chimeric_tools.data import CovidData
 from arch.bootstrap import CircularBlockBootstrap
-
-
-
-class Model(object):
-    """
-    Just a quick and dirty test model
-    """
-
-    def __init__(self, data: pd.DataFrame):
-        self.data = np.array(data["value"])
-        self.model = sm.tsa.statespace.SARIMAX(self.data, order=(2, 1, 0))
-        self.result = self.model.fit(disp=0)
-        self.preds = self.result.predict()
-        self.residuals = self.result.resid
 
 
 class COVID(object):
     """
     Covid simulation class
+
+    Parameters
+    ----------
+    start_date : date, optional
+        The start date of the simulation. Defaults to None.
+    end_date : date, optional
+        The end date of the simulation. Defaults to None.
+    geo_values : Union[np.ndarray, Dict[str, float], str, list, None], optional
+        The geo values to use. Defaults to None.
+    custom_data : Optional[pd.DataFrame], optional
+        The custom data to use. Defaults to None.
+    seed : Union[None, int, Generator], optional
+        The seed to use. Defaults to None.
+
+    Examples
+    --------
     """
 
     def __init__(
@@ -49,6 +50,8 @@ class COVID(object):
 
         self.start_date = start_date
         self.end_date = end_date
+
+        # --conver geo_values to correct type
         if isinstance(geo_values, (np.ndarray, list)):
             self.geo_values = geo_values
             self.p = None
@@ -61,6 +64,8 @@ class COVID(object):
         elif geo_values is None:
             self.geo_values = None
             self.p = None
+        
+        # --get covid data from data class
         self.data = CovidData(
             start_date=start_date,
             end_date=end_date,
@@ -70,6 +75,7 @@ class COVID(object):
         if geo_values is None:
             self.geo_values = self.data["location"].unique()
 
+        # --set seed
         if isinstance(seed, Generator):
             self.generator = seed
         elif isinstance(seed, (int, np.integer)):
@@ -81,23 +87,21 @@ class COVID(object):
                 "generator keyword argument must contain a NumPy Generator or "
                 "RandomState instance or an integer when used."
             )
-    
 
     def pick_geo_values(self, reps):
         """
-        Picks the geo values to use
+        Randomly generate geo values with probability p and repeat for reps times
         """
-        indices = self.generator.choice(
-            a=len(self.geo_values), size=reps, p=self.p)
+        indices = self.generator.choice(a=len(self.geo_values), size=reps, p=self.p)
         return np.array([self.geo_values[x] for x in indices])
-
 
     def simulate(self, reps):
         """
-        Simulates the data
+        Simulate reps number of simulations using random geo values and boostrapped time series
         """
         geo_for_sample = self.pick_geo_values(reps)
 
+        # --for each geo value boostrap the residuals and add to data
         for geo_value in geo_for_sample:
             sub_data = self.data[self.data["location"] == geo_value].reset_index()
             bs = CircularBlockBootstrap(5, sub_data["residual"])
