@@ -18,18 +18,22 @@ from chimeric_tools.models import model
 
 def check_for_data(path: str) -> bool:
     """
-    Checks to see if a data file exists
+    Check to see if a  file exists
 
     Parameters
     ----------
-        path : str path to the data file
+        path : str path to the file that is being checked
     """
     return os.path.exists(path)
 
 
 def load_truths():
     """
-    Loads package data
+    Loads raw truth data from CSSE dataset
+
+    Returns
+    ----------
+        dataframe
     """
     stream = pkg_resources.resource_stream(__name__, "data/truth-Incident Cases.csv")
     data = pd.read_csv(stream)
@@ -38,7 +42,11 @@ def load_truths():
 
 def load_daily_covid():
     """
-    Loads the daily covid data
+    Load daily data complete with model predictions and residuals
+
+    Returns
+    ----------
+        dataframe
     """
     stream = pkg_resources.resource_stream(__name__, "data/daily_covid.csv.gz")
     data = pd.read_csv(stream, compression="gzip")
@@ -47,7 +55,11 @@ def load_daily_covid():
 
 def load_weekly_covid():
     """
-    Loads the weekly covid data
+    Load weekly data complete with model predictions and residuals
+
+    Returns
+    ----------
+        dataframe
     """
     stream = pkg_resources.resource_stream(__name__, "data/weekly_covid.csv.gz")
     data = pd.read_csv(stream, compression="gzip")
@@ -64,11 +76,17 @@ def get_unique_covid_data(
     """
     Gets covid data from Delphi API
 
-    :param geo_type: the type of the geo value
-    :param geo_value: the value of the geo
-    :param start_date: the start date of the data
-    :param end_date: the end date of the data
-    :return: the dataframe of the covid data
+    Parameters
+    ----------
+
+    geo_type: the type of the geo value
+    geo_value: the value of the geo
+    start_date: the start date of the data
+    end_date: the end date of the data
+    
+    Returns
+    ----------
+        dataframe of the covid data
 
     """
 
@@ -78,6 +96,7 @@ def get_unique_covid_data(
     if start_day is None:
         start_day = date(2020, 1, 22)
 
+    # --call to Delphi API for incident cases
     data = covidcast.signal(
         data_source="jhu-csse",
         signal="confirmed_incidence_num",
@@ -92,17 +111,20 @@ def get_unique_covid_data(
         df = data[["time_value", "geo_value", "value"]]
         df = df.rename(columns={"geo_value": "location", "time_value": "date"})
         df["location"] = df["location"].astype(int).astype(str)
+        # --change fip to name
         df["location_name"] = covidcast.fips_to_name(df["location"])
     else:
         # --configure df
         df = pd.DataFrame()
         df["date"] = data["time_value"]
         # df["location"] = [x[0:2] for x in covidcast.abbr_to_fips(data["geo_value"], ignore_case=True)]
+        # --change all values to uppercase 
         df["location"] = data["geo_value"].apply(lambda x: x.upper())
+        # --change all abbrivations to full name
         df["location_name"] = covidcast.abbr_to_name(
             data["geo_value"], ignore_case=True
         )
-        df["value"] = data["value"]
+        #df["value"] = data["value"]
     return df
 
 
@@ -116,29 +138,41 @@ def get_raw_truth_df(url) -> pd.DataFrame:
 
 def daily_to_weekly(data):
     """
-    Converts the daily data to weekly data
+    Converts daily data into weekly data by summing all cases for that week.
+    Dataframe must be in format [ date: date or str, location: str, location_name, str,  value: int or float]
 
-    df must be in format [ date: date or str, location: str, location_name, str,  value: int or float]
+    Parameters
+    ----------
+
+        data: dataframe [ date: date or str, location: str, location_name, str,  value: int or float]
+
+    Returns
+    ----------
+
+        Dataframe of weekly cases for each location
     """
+
     unique_dates = data.date.unique()
 
-    fromDate2EW = {"date": [], "start_date": [], "end_date": [], "EW": []}
+    weekly_data = {"date": [], "start_date": [], "end_date": [], "EW": []}
+    
+    # --iterate through all unique dates
     for date in unique_dates:
-        fromDate2EW["date"].append(date)
+        weekly_data["date"].append(date)
 
         dt = pd.to_datetime(date)
         week = Week.fromdate(dt)
 
         startdate = week.startdate()
-        fromDate2EW["start_date"].append(startdate)
+        weekly_data["start_date"].append(startdate)
 
         enddate = week.enddate()
-        fromDate2EW["end_date"].append(enddate)
+        weekly_data["end_date"].append(enddate)
 
-        fromDate2EW["EW"].append(week.cdcformat())
-    fromDate2EW = pd.DataFrame(fromDate2EW)
+        weekly_data["EW"].append(week.cdcformat())
+    weekly_data = pd.DataFrame(weekly_data)
 
-    data = data.merge(fromDate2EW, on=["date"])
+    data = data.merge(weekly_data, on=["date"])
 
     def aggregate(x):
         cases = x.value.sum()
@@ -174,6 +208,7 @@ class CovidData(object):
 
         __DATA_PATH = os.path.dirname(__file__) + "/data/truth-Incident Cases.csv"
 
+        # --does the df have the right colums
         if isinstance(custom_data, pd.DataFrame):
             if custom_data.empty:
                 raise Exception("custom_data is empty")
@@ -193,6 +228,7 @@ class CovidData(object):
         self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
         self.data["location"] = self.data["location"].astype(str)
 
+        # --sets to geo_values to right type
         if geo_values is None:
             self.geo_values = self.data["location"].unique()
         elif isinstance(geo_values, list):
@@ -202,12 +238,14 @@ class CovidData(object):
         else:
             self.geo_values = geo_values
 
+        # --get current dates
         max_date = max(self.data["date"])
         min_date = min(self.data["date"])
 
         self.start_date = start_date
         self.end_date = end_date
 
+        # --set start and end dates
         if self.start_date is None:
             self.start_date = min_date
         if self.end_date is None:
@@ -223,6 +261,7 @@ class CovidData(object):
             )
             # --check if the data is already downloaded
             self.file_hash = self.create_file_hash()
+            #TODO how to get relitive path
             file_path = "./data/" + self.file_hash + ".csv"
             if check_for_data(file_path):
                 self.data = pd.read_csv("./data/" + self.file_hash + ".csv")
@@ -234,6 +273,7 @@ class CovidData(object):
                 self.data = pd.concat([self.data, loc_data])
                 self.data = model(self.data)
 
+        # --loc all data
         mask = (
             (self.data["date"] >= self.start_date)
             | (self.data["date"] <= self.end_date)
@@ -245,6 +285,7 @@ class CovidData(object):
         Creates a hash of the data
         """
         self.geo_values.sort()
+        # --create hash of all FIPS and start and end dates
         hash_string = (
             "".join([str(i) for i in self.geo_values])
             + (str(self.start_date))
@@ -256,13 +297,17 @@ class CovidData(object):
         """
         Downloads all geo values data that is not in not on file
         """
+        # --sort state and county FIPS
         mask = np.array([len(_) >= 4 for _ in self.geo_values])
         county_values = self.geo_values[mask]
         state_values = covidcast.fips_to_abbr(self.geo_values[~mask])
 
+
+        # --create empty df
         county = pd.DataFrame(columns=["date", "location", "location_name", "value"])
         state = pd.DataFrame(columns=["date", "location", "location_name", "value"])
 
+        # --download county data
         state_values = np.char.upper(state_values)
         if len(county_values) > 0:
             print("Downloading county data")
@@ -272,6 +317,7 @@ class CovidData(object):
                 start_day=start_date,
                 end_day=end_date,
             )
+        # --download state data
         if len(state_values) > 0:
             print("Downloading state data")
             state = get_unique_covid_data(
