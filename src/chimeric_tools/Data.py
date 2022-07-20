@@ -13,6 +13,7 @@ import requests
 import pkg_resources
 import covidcast
 from epiweeks import Week
+from datetime import datetime
 from chimeric_tools.models import model
 
 
@@ -70,8 +71,8 @@ def load_weekly_covid():
 def get_unique_covid_data(
     geo_type: str,
     geo_values: Union[str, Iterable[str]],
-    start_day: Optional[date],
-    end_day: Optional[date],
+    start_date: Optional[date],
+    end_date: Optional[date],
 ) -> pd.DataFrame:
     """
     Gets covid data from Delphi API
@@ -93,8 +94,14 @@ def get_unique_covid_data(
     # --checking inputs
     if not (geo_type == "state" or geo_type == "county"):
         raise Exception("geo_type must be 'state' or 'county'")
-    if start_day is None:
-        start_day = date(2020, 1, 22)
+    if start_date is None:
+        start_date = date(2020, 1, 22)
+
+    if isinstance(start_date, str):
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+
+    if isinstance(end_date, str):
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
 
     # --call to Delphi API for incident cases
     data = covidcast.signal(
@@ -102,8 +109,8 @@ def get_unique_covid_data(
         signal="confirmed_incidence_num",
         geo_type=geo_type,
         geo_values=geo_values,
-        start_day=start_day,
-        end_day=end_day,
+        start_day=start_date,
+        end_day=end_date,
     )
 
     if geo_type == "county":
@@ -124,7 +131,7 @@ def get_unique_covid_data(
         df["location_name"] = covidcast.abbr_to_name(
             data["geo_value"], ignore_case=True
         )
-        #df["value"] = data["value"]
+        df["value"] = data["value"]
     return df
 
 
@@ -314,8 +321,8 @@ class CovidData(object):
             county = get_unique_covid_data(
                 geo_type="county",
                 geo_values=county_values,
-                start_day=start_date,
-                end_day=end_date,
+                start_date=start_date,
+                end_date=end_date,
             )
         # --download state data
         if len(state_values) > 0:
@@ -323,8 +330,8 @@ class CovidData(object):
             state = get_unique_covid_data(
                 geo_type="state",
                 geo_values=state_values,
-                start_day=start_date,
-                end_day=end_date,
+                start_date=start_date,
+                end_date=end_date,
             )
 
         return pd.concat([county, state])
