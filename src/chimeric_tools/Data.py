@@ -269,9 +269,9 @@ class CovidData(object):
             # --check if the data is already downloaded
             self.file_hash = self.create_file_hash()
             #TODO how to get relitive path
-            file_path = "./data/" + self.file_hash + ".csv"
+            file_path = os.path.dirname(__file__) + "/data" + self.file_hash + ".csv"
             if check_for_data(file_path):
-                self.data = pd.read_csv("./data/" + self.file_hash + ".csv")
+                self.data = pd.read_csv(file_path)
             else:
                 # loc data that we already have
                 loc_data = self.download_data(
