@@ -1,3 +1,6 @@
 library(covidData)
 library(covidHubUtils)
 covidHubUtils::preprocess_jhu("../src/chimeric_tools/data")
+file.remove("../src/chimeric_tools/data/truth-Cumulative Cases.csv")
+file.remove("../src/chimeric_tools/data/truth-Cumulative Deaths.csv")
+file.remove("../src/chimeric_tools/data/truth-Cumulative Hospitalizations")

@@ -28,7 +28,7 @@ def check_for_data(path: str) -> bool:
     return os.path.exists(path)
 
 
-def load_truths():
+def load_cases_truths():
     """
     Loads raw truth data from CSSE dataset
 
@@ -41,7 +41,38 @@ def load_truths():
     data["location"] = data["location"].astype(str)
     return data
 
-def load_daily_covid():
+
+def load_deaths_truths():
+    """
+    Loads raw truth data from CSSE dataset
+
+    Returns
+    ----------
+        dataframe
+    """
+    stream = pkg_resources.resource_stream(__name__, "data/truth-Incident Deaths.csv")
+    data = pd.read_csv(stream)
+    data["location"] = data["location"].astype(str)
+    return data
+
+
+def load_hosps_truths():
+    """
+    Loads raw truth data from CSSE dataset
+
+    Returns
+    ----------
+        dataframe
+    """
+    stream = pkg_resources.resource_stream(
+        __name__, "data/truth-Incident Hospitalizations.csv"
+    )
+    data = pd.read_csv(stream)
+    data["location"] = data["location"].astype(str)
+    return data
+
+
+def load_cases_daily():
     """
     Load daily data complete with model predictions and residuals
 
@@ -49,12 +80,41 @@ def load_daily_covid():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(__name__, "data/daily_covid.csv.gz")
+    stream = pkg_resources.resource_stream(__name__, "data/cases_daily.csv.gz")
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
 
-def load_weekly_covid():
+
+def load_deaths_daily():
+    """
+    Load daily data complete with model predictions and residuals
+
+    Returns
+    ----------
+        dataframe
+    """
+    stream = pkg_resources.resource_stream(__name__, "data/deaths_daily.csv.gz")
+    data = pd.read_csv(stream, compression="gzip")
+    data["location"] = data["location"].astype(str)
+    return data
+
+
+def load_hosps_daily():
+    """
+    Load daily data complete with model predictions and residuals
+
+    Returns
+    ----------
+        dataframe
+    """
+    stream = pkg_resources.resource_stream(__name__, "data/hosps_daily.csv.gz")
+    data = pd.read_csv(stream, compression="gzip")
+    data["location"] = data["location"].astype(str)
+    return data
+
+
+def load_cases_weekly():
     """
     Load weekly data complete with model predictions and residuals
 
@@ -62,7 +122,35 @@ def load_weekly_covid():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(__name__, "data/weekly_covid.csv.gz")
+    stream = pkg_resources.resource_stream(__name__, "data/cases_weekly.csv.gz")
+    data = pd.read_csv(stream, compression="gzip")
+    data["location"] = data["location"].astype(str)
+    return data
+
+
+def load_deaths_weekly():
+    """
+    Load weekly data complete with model predictions and residuals
+
+    Returns
+    ----------
+        dataframe
+    """
+    stream = pkg_resources.resource_stream(__name__, "data/deaths_weekly.csv.gz")
+    data = pd.read_csv(stream, compression="gzip")
+    data["location"] = data["location"].astype(str)
+    return data
+
+
+def load_hosps_weekly():
+    """
+    Load weekly data complete with model predictions and residuals
+
+    Returns
+    ----------
+        dataframe
+    """
+    stream = pkg_resources.resource_stream(__name__, "data/hosps_weekly.csv.gz")
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
@@ -84,7 +172,7 @@ def get_unique_covid_data(
     geo_value: the value of the geo
     start_date: the start date of the data
     end_date: the end date of the data
-    
+
     Returns
     ----------
         dataframe of the covid data
@@ -125,7 +213,7 @@ def get_unique_covid_data(
         df = pd.DataFrame()
         df["date"] = data["time_value"]
         # df["location"] = [x[0:2] for x in covidcast.abbr_to_fips(data["geo_value"], ignore_case=True)]
-        # --change all values to uppercase 
+        # --change all values to uppercase
         df["location"] = data["geo_value"].apply(lambda x: x.upper())
         # --change all abbrivations to full name
         df["location_name"] = covidcast.abbr_to_name(
@@ -162,7 +250,7 @@ def daily_to_weekly(data):
     unique_dates = data.date.unique()
 
     weekly_data = {"date": [], "start_date": [], "end_date": [], "EW": []}
-    
+
     # --iterate through all unique dates
     for date in unique_dates:
         weekly_data["date"].append(date)
@@ -230,7 +318,7 @@ class CovidData(object):
                     "Downloading data...you must have gone out of you way to delete the data in lib :)"
                 )
                 get_raw_truth_df(DATA_URL).to_csv(__DATA_PATH)
-            self.data = load_weekly_covid()
+            self.data = load_cases_weekly()
 
         self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
         self.data["location"] = self.data["location"].astype(str)
@@ -268,7 +356,6 @@ class CovidData(object):
             )
             # --check if the data is already downloaded
             self.file_hash = self.create_file_hash()
-            #TODO how to get relitive path
             file_path = os.path.dirname(__file__) + "/data" + self.file_hash + ".csv"
             if check_for_data(file_path):
                 self.data = pd.read_csv(file_path)
@@ -308,7 +395,6 @@ class CovidData(object):
         mask = np.array([len(_) >= 4 for _ in self.geo_values])
         county_values = self.geo_values[mask]
         state_values = covidcast.fips_to_abbr(self.geo_values[~mask])
-
 
         # --create empty df
         county = pd.DataFrame(columns=["date", "location", "location_name", "value"])
