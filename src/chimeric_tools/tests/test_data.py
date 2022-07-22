@@ -9,12 +9,10 @@ def test_load_truths():
     assert isinstance(load_deaths_truths(), pd.DataFrame)
     assert isinstance(load_hosps_truths(), pd.DataFrame)
 
-
-
-def test_load_daily_covid():
-    assert isinstance(load_cases_daily(), pd.DataFrame)
-    assert isinstance(load_deaths_daily(), pd.DataFrame)
-    assert isinstance(load_hosps_daily(), pd.DataFrame)
+# def test_load_daily_covid():
+#     assert isinstance(load_cases_daily(), pd.DataFrame)
+#     assert isinstance(load_deaths_daily(), pd.DataFrame)
+#     assert isinstance(load_hosps_daily(), pd.DataFrame)
 
 
 def test_load_weekly_covid():

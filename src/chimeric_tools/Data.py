@@ -72,46 +72,46 @@ def load_hosps_truths():
     return data
 
 
-def load_cases_daily():
-    """
-    Load daily data complete with model predictions and residuals
+# def load_cases_daily():
+#     """
+#     Load daily data complete with model predictions and residuals
 
-    Returns
-    ----------
-        dataframe
-    """
-    stream = pkg_resources.resource_stream(__name__, "data/cases_daily.csv.gz")
-    data = pd.read_csv(stream, compression="gzip")
-    data["location"] = data["location"].astype(str)
-    return data
-
-
-def load_deaths_daily():
-    """
-    Load daily data complete with model predictions and residuals
-
-    Returns
-    ----------
-        dataframe
-    """
-    stream = pkg_resources.resource_stream(__name__, "data/deaths_daily.csv.gz")
-    data = pd.read_csv(stream, compression="gzip")
-    data["location"] = data["location"].astype(str)
-    return data
+#     Returns
+#     ----------
+#         dataframe
+#     """
+#     stream = pkg_resources.resource_stream(__name__, "data/cases_daily.csv.gz")
+#     data = pd.read_csv(stream, compression="gzip")
+#     data["location"] = data["location"].astype(str)
+#     return data
 
 
-def load_hosps_daily():
-    """
-    Load daily data complete with model predictions and residuals
+# def load_deaths_daily():
+#     """
+#     Load daily data complete with model predictions and residuals
 
-    Returns
-    ----------
-        dataframe
-    """
-    stream = pkg_resources.resource_stream(__name__, "data/hosps_daily.csv.gz")
-    data = pd.read_csv(stream, compression="gzip")
-    data["location"] = data["location"].astype(str)
-    return data
+#     Returns
+#     ----------
+#         dataframe
+#     """
+#     stream = pkg_resources.resource_stream(__name__, "data/deaths_daily.csv.gz")
+#     data = pd.read_csv(stream, compression="gzip")
+#     data["location"] = data["location"].astype(str)
+#     return data
+
+
+# def load_hosps_daily():
+#     """
+#     Load daily data complete with model predictions and residuals
+
+#     Returns
+#     ----------
+#         dataframe
+#     """
+#     stream = pkg_resources.resource_stream(__name__, "data/hosps_daily.csv.gz")
+#     data = pd.read_csv(stream, compression="gzip")
+#     data["location"] = data["location"].astype(str)
+#     return data
 
 
 def load_cases_weekly():
@@ -294,6 +294,7 @@ class CovidData(object):
         start_date: Union[date, None] = None,
         end_date: Union[date, None] = None,
         geo_values: Union[np.ndarray, list, str, None] = None,
+        
         custom_data: Optional[pd.DataFrame] = None,
     ):
         """
@@ -301,7 +302,7 @@ class CovidData(object):
 
         """
 
-        __DATA_PATH = os.path.dirname(__file__) + "/data/truth-Incident Cases.csv"
+        __DATA_PATH = os.path.dirname(__file__) + "/data/d"
 
         # --does the df have the right colums
         if isinstance(custom_data, pd.DataFrame):
