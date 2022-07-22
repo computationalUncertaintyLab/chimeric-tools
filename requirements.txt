@@ -16,3 +16,5 @@ sphinx_theme
 epiweeks
 delphi_epidata
 statsmodels
+pytest
+pytest-cov
