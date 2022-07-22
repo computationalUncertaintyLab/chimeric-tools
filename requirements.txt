@@ -18,3 +18,4 @@ delphi_epidata
 statsmodels
 pytest
 pytest-cov
+covidcast
