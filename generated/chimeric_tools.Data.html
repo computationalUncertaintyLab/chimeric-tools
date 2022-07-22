@@ -38,7 +38,9 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="chimeric_tools 0.0.1 documentation" href="../index.html"/> 
+    <link rel="top" title="chimeric_tools 0.0.1 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="../api.html"/>
+        <link rel="prev" title="chimeric_tools.Spatial" href="chimeric_tools.Spatial.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -84,9 +86,14 @@
           
             
             
-                <ul>
+                <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="chimeric_tools.Time.html">chimeric_tools.Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chimeric_tools.Spatial.html">chimeric_tools.Spatial</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">chimeric_tools.Data</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -131,6 +138,8 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../api.html">API</a> &raquo;</li>
+        
       <li>chimeric_tools.Data</li>
     
     
@@ -150,14 +159,82 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="chimeric-tools-data">
-<h1>chimeric_tools.Data<a class="headerlink" href="#chimeric-tools-data" title="Permalink to this headline">¶</a></h1>
+  <section id="module-chimeric_tools.Data">
+<span id="chimeric-tools-data"></span><h1>chimeric_tools.Data<a class="headerlink" href="#module-chimeric_tools.Data" title="Permalink to this headline">¶</a></h1>
+<p>Classes to keep data up to date</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_for_data</span></code>(path)</p></td>
+<td><p>Check to see if a  file exists</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">daily_to_weekly</span></code>(data)</p></td>
+<td><p>Converts daily data into weekly data by summing all cases for that week.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_raw_truth_df</span></code>(url)</p></td>
+<td><p>Gets raw csv and turns it into dataframe</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_unique_covid_data</span></code>(geo_type, geo_values, ...)</p></td>
+<td><p>Gets covid data from Delphi API</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_cases_daily</span></code>()</p></td>
+<td><p>Load daily data complete with model predictions and residuals</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_cases_truths</span></code>()</p></td>
+<td><p>Loads raw truth data from CSSE dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_cases_weekly</span></code>()</p></td>
+<td><p>Load weekly data complete with model predictions and residuals</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_deaths_daily</span></code>()</p></td>
+<td><p>Load daily data complete with model predictions and residuals</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_deaths_truths</span></code>()</p></td>
+<td><p>Loads raw truth data from CSSE dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_deaths_weekly</span></code>()</p></td>
+<td><p>Load weekly data complete with model predictions and residuals</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_hosps_daily</span></code>()</p></td>
+<td><p>Load daily data complete with model predictions and residuals</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_hosps_truths</span></code>()</p></td>
+<td><p>Loads raw truth data from CSSE dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_hosps_weekly</span></code>()</p></td>
+<td><p>Load weekly data complete with model predictions and residuals</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CovidData</span></code>([start_date, end_date, ...])</p></td>
+<td><p>Class to Manage COVID Data</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="chimeric_tools.Spatial.html" class="btn btn-neutral" title="chimeric_tools.Spatial" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

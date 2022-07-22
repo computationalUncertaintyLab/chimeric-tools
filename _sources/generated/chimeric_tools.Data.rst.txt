@@ -13,14 +13,29 @@
 
    .. autosummary::
    
-      crawl_data_to_feature_all
-      crawl_data_to_feature_specific
-      random_generate_fluseason
-      randomly_select_fluseason
+      check_for_data
+      daily_to_weekly
+      get_raw_truth_df
+      get_unique_covid_data
+      load_cases_daily
+      load_cases_truths
+      load_cases_weekly
+      load_deaths_daily
+      load_deaths_truths
+      load_deaths_weekly
+      load_hosps_daily
+      load_hosps_truths
+      load_hosps_weekly
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CovidData
    
    
 
