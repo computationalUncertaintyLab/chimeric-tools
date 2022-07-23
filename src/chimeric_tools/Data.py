@@ -353,7 +353,7 @@ class CovidData(object):
             self.start_date = min_date
         if self.end_date > max_date:
             warnings.warn(
-                "end_date is after the latest date in the data. We will downlaod this data for you. It might take some time"
+                "end_date is after the latest date in the data. We will download this data for you. It might take some time"
             )
             # --check if the data is already downloaded
             self.file_hash = self.create_file_hash()
