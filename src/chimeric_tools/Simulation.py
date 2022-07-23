@@ -97,7 +97,7 @@ class COVID(object):
 
     def simulate(self, reps):
         """
-        Simulate reps number of simulations using random geo values and boostrapped time series
+        Simulate reps number of simulations using random geo values and bootstrapped time series
         """
         geo_for_sample = self.pick_geo_values(reps)
 

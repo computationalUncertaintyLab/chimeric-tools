@@ -1,4 +1,4 @@
-# Fuction name: GetStateAbbreviation
+# Function name: GetStateAbbreviation
 # input: StateName
 # output: StateAbbreviation
 # info: 
@@ -27,7 +27,7 @@ def fromState2FIPS(StateString):
     """
     Return the FIPS value that corresponds to the state (For example the FIPS for PA is 42)
 
-    :param: String abbrevation of a state. For example "PA"
+    :param: String abbreviation of a state. For example "PA"
     :return: The FIPS value that corresponds to the state (For example the FIPS for PA is 42)
     :rtype: INT
     

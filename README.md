@@ -7,11 +7,11 @@
 ### Preprocess folder
 - Function name: formatIndividualPredictions
   - input: a single csv file of individual predictions from metaculus
-  - output: a pandas daat frame that is long format
+  - output: a pandas dataframe that is long format
   - info: Wenxuan, this is your code that transforms the csv file to long. 
 
 - Function name: write_individual_formatted
-  - input: a pandas data frame in lojng format
+  - input: a pandas dataframe in lojng format
   - output: nothing
   - info: Wenxuan, this will output the formatted pandas data frame to a file with the name "WW-YYYY-MM-DD_metaculus_individual_predictions.csv.gz" where WW is the epidemic week, YYYY is the year, mm is month, and dd is day. 
 
@@ -23,7 +23,7 @@
 ### spatial folder
 
 - Function Name: fromState2FIPS
-  - input: String abbrevation of a state. For example "PA"
+  - input: String abbreviation of a state. For example "PA"
   - output: The FIPS value that corresponds to the state (For example the FIPS for PA is 42)
   -  info: I think this URL will be useful https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697
 
@@ -64,7 +64,7 @@ We need to
 1. Download weighted ILI values (wILI) from the API above from 2009 to present. 
 2. Format the wILI values into a dataframe with columns
    1. Season
-       - The Infleunza season starts in epidemic week 40 of year YYYY and ends in epidemic week 20 of the follow year (YYYY+1). Season is a string value with one year a "/" and a second year (YYYY/YYYY) that depends on epidemic week. For example, If an epidemic week has year 2011 and any of the weeks 40 to 53 then the Season will be 2011/2012. If the week is 1-20 then the Season is 2010/2011.  
+       - The Influenza season starts in epidemic week 40 of year YYYY and ends in epidemic week 20 of the follow year (YYYY+1). Season is a string value with one year a "/" and a second year (YYYY/YYYY) that depends on epidemic week. For example, If an epidemic week has year 2011 and any of the weeks 40 to 53 then the Season will be 2011/2012. If the week is 1-20 then the Season is 2010/2011.  
    3. Epidemic week 
        - The year and week YYYYWW of the associated wILI value
    5. HHS Region
@@ -87,7 +87,7 @@ We will build a dataframe that contains the columns: week (an integer), HHS regi
 Depending on the season, there can be weeks 40-52 and 1-20 (33) or weeks 40-53 and 1-20 (34).
 1. We need to count the number of seasons that have 34 weeks (my guess is that there have been 2, maybe 3)
 2. With probability p we choose to generate a season with 33 weeks and with probability (1-p) we generate a 34 week season. 
-    - p is estimated as the number of past seasons with 33 weeks dividded by all seasons
+    - p is estimated as the number of past seasons with 33 weeks divided by all seasons
 3. For each week (w), build a list of wili values from all past seasons corresponding to week w and the user supplied HHS region. 
 4. Select with uniform probability one of the wili values from the list in (3.) 
 5. Iterate steps 3. and 4. over all epidemic weeks.  
@@ -99,7 +99,7 @@ We will build a dataframe that contains the columns: week (an integer), HHS regi
 Depending on the season, there can be weeks 40-52 and 1-20 (33) or weeks 40-53 and 1-20 (34).
 1. We need to count the number of seasons that have 34 weeks (my guess is that there have been 2, maybe 3)
 2. With probability p we choose to generate a season with 33 weeks and with probability (1-p) we generate a 34 week season. 
-    - p is estimated as the number of past seasons with 33 weeks dividded by all seasons
+    - p is estimated as the number of past seasons with 33 weeks divided by all seasons
 3. For each week (w), build a list of wili values from all past seasons corresponding to week w over all HHS regions. 
 4. Select with uniform probability one of the wili values from the list in (3.) 
 5. Iterate steps 3. and 4. over all epidemic weeks.  
