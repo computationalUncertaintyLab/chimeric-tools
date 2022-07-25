@@ -104,7 +104,7 @@ class COVID(object):
         # --for each geo value boostrap the residuals and add to data
         for geo_value in geo_for_sample:
             sub_data = self.data[self.data["location"] == geo_value].reset_index()
-            bs = CircularBlockBootstrap(5, sub_data["residual"])
+            bs = CircularBlockBootstrap(5, sub_data["residuals"])
             for data in bs.bootstrap(1):
-                sim_data = (data[0][0]).reset_index(drop=True) + sub_data["pred"]
+                sim_data = (data[0][0]).reset_index(drop=True) + sub_data["preds"]
                 yield (sim_data, geo_value)

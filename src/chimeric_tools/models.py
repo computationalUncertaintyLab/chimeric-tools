@@ -9,8 +9,8 @@ def model(data: pd.DataFrame):
     for fip in data["location"].unique():
         sub_data = data.loc[data["location"] == fip]
         m = ARIMA(sub_data)
-        data.loc[data["location"] == fip,"pred"] = m.preds
-        data.loc[data["location"] == fip,"residual"] = m.residuals
+        data.loc[data["location"] == fip,"preds"] = m.preds
+        data.loc[data["location"] == fip,"residuals"] = m.residuals
     return data
 
 
