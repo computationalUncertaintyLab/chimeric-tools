@@ -22,18 +22,15 @@ jobs:
     - name: Install system dependencies
       run: sudo apt-get install libudunits2-dev libcurl4-openssl-dev libgdal-dev
       
-    - name: Install R dependencies (dev-tools)
-      uses: r-lib/actions/setup-r-dependencies@v2
+    - name: Checkout covidData
+      uses: actions/checkout@v2
       with:
-        cache-version: 2
-        extra-packages: |
-          any::devtools
-          any::tidyverse
-          any::rvest
-          any::here
-          any::covidcast
+        repository: reichlab/covidData
+        token: ${{secrets.GH_TOKEN}}
+        path: covidData
 
     - name: Install R dependencies (for covidData + covidHubUtils)
+      working-directory: ./chimeric_tools
       run: Rscript scripts/install_dependencies.R
       env:
         GITHUB_PAT: ${{ secrets.GH_TOKEN }}
@@ -48,12 +45,11 @@ jobs:
       run: pip3 install -r requirements.txt
 
     - name: Get data truths
-      run: Rscript scripts/install_dependencies.R
-
-    - name: Make preds
-      run: python3 scripts/make_preds.py
+      working-directory: ./chimeric_tools
+      run: bash scripts/update_data.sh
 
     - name: Push generated files to GitHub
+      working-directory: ./chimeric_tools
       run: bash scripts/push-gh.sh
       env:
         GITHUB_PAT: ${{ secrets.GH_TOKEN }}
