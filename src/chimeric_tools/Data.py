@@ -4,7 +4,7 @@ Classes to keep data up to date
 """
 import os
 from typing import Optional, Union, Iterable
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import io
 import warnings
 import pandas as pd
@@ -13,7 +13,6 @@ import requests
 import pkg_resources
 import covidcast
 from epiweeks import Week
-from datetime import datetime
 from chimeric_tools.models import model
 
 
@@ -294,7 +293,7 @@ class CovidData(object):
         start_date: Union[date, None] = None,
         end_date: Union[date, None] = None,
         geo_values: Union[np.ndarray, list, str, None] = None,
-        
+        include: Union[list, None] = None,
         custom_data: Optional[pd.DataFrame] = None,
     ):
         """
@@ -319,7 +318,15 @@ class CovidData(object):
                     "Downloading data...you must have gone out of you way to delete the data in lib :)"
                 )
                 get_raw_truth_df(DATA_URL).to_csv(__DATA_PATH)
+
+
+        if include is None: 
             self.data = load_cases_weekly()
+            self.data = self.data.merge(load_deaths_weekly(), on=["date", "location"])
+            self.data = self.data.merge(load_hosps_weekly(), on=["date", "location"])
+        #TODO
+        elif isinstance(include, list):
+            pass            
 
         self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
         self.data["location"] = self.data["location"].astype(str)
@@ -338,8 +345,14 @@ class CovidData(object):
         max_date = max(self.data["date"])
         min_date = min(self.data["date"])
 
-        self.start_date = start_date
-        self.end_date = end_date
+        if isinstance(start_date, str):
+            self.start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        else:
+            self.start_date = start_date
+        if isinstance(end_date, str):
+            self.end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        else:
+            self.end_date = end_date
 
         # --set start and end dates
         if self.start_date is None:
@@ -366,6 +379,7 @@ class CovidData(object):
                     start_date=max_date + timedelta(days=1), end_date=self.end_date
                 )
                 self.data = pd.concat([self.data, loc_data])
+                print(self.data)
                 self.data = model(self.data)
 
         # --loc all data
@@ -386,7 +400,7 @@ class CovidData(object):
             + (str(self.start_date))
             + (str(self.end_date))
         )
-        return str(hash(hash_string))
+        return hash_string
 
     def download_data(self, start_date: Optional[date], end_date: Optional[date]):
         """
@@ -402,7 +416,6 @@ class CovidData(object):
         state = pd.DataFrame(columns=["date", "location", "location_name", "value"])
 
         # --download county data
-        state_values = np.char.upper(state_values)
         if len(county_values) > 0:
             print("Downloading county data")
             county = get_unique_covid_data(
@@ -414,6 +427,7 @@ class CovidData(object):
         # --download state data
         if len(state_values) > 0:
             print("Downloading state data")
+            state_values = np.char.upper(state_values)
             state = get_unique_covid_data(
                 geo_type="state",
                 geo_values=state_values,
