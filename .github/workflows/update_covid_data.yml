@@ -15,8 +15,6 @@ jobs:
       with:
         fetch-depth: 0  # fetch all history so that last modified date-times are accurate
 
-
-
     - name: Setup GitHub Action for R language
       uses: r-lib/actions/setup-r@v1
 
@@ -27,14 +25,14 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: reichlab/covidData
-        token: ${{secrets.GH_TOKEN}}
+        token: ${{secrets.github_token}}
         path: covidData
 
     - name: Install R dependencies (for covidData + covidHubUtils)
       working-directory: ./chimeric_tools
       run: Rscript scripts/install_dependencies.R
       env:
-        GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+        GITHUB_PAT: ${{ secrets.github_token }}
 
     - name: Python Set-Up
       uses: actions/setup-python@v4
@@ -53,4 +51,4 @@ jobs:
       working-directory: ./chimeric_tools
       run: bash scripts/push-gh.sh
       env:
-        GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+        GITHUB_PAT: ${{ secrets.github_token }}
