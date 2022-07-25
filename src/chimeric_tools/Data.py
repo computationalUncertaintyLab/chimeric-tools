@@ -71,48 +71,6 @@ def load_hosps_truths():
     return data
 
 
-# def load_cases_daily():
-#     """
-#     Load daily data complete with model predictions and residuals
-
-#     Returns
-#     ----------
-#         dataframe
-#     """
-#     stream = pkg_resources.resource_stream(__name__, "data/cases_daily.csv.gz")
-#     data = pd.read_csv(stream, compression="gzip")
-#     data["location"] = data["location"].astype(str)
-#     return data
-
-
-# def load_deaths_daily():
-#     """
-#     Load daily data complete with model predictions and residuals
-
-#     Returns
-#     ----------
-#         dataframe
-#     """
-#     stream = pkg_resources.resource_stream(__name__, "data/deaths_daily.csv.gz")
-#     data = pd.read_csv(stream, compression="gzip")
-#     data["location"] = data["location"].astype(str)
-#     return data
-
-
-# def load_hosps_daily():
-#     """
-#     Load daily data complete with model predictions and residuals
-
-#     Returns
-#     ----------
-#         dataframe
-#     """
-#     stream = pkg_resources.resource_stream(__name__, "data/hosps_daily.csv.gz")
-#     data = pd.read_csv(stream, compression="gzip")
-#     data["location"] = data["location"].astype(str)
-#     return data
-
-
 def load_cases_weekly():
     """
     Load weekly data complete with model predictions and residuals
@@ -153,81 +111,6 @@ def load_hosps_weekly():
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
-
-
-def get_unique_covid_data(
-    geo_type: str,
-    geo_values: Union[str, Iterable[str]],
-    start_date: Optional[date],
-    end_date: Optional[date],
-) -> pd.DataFrame:
-    """
-    Gets covid data from Delphi API
-
-    Parameters
-    ----------
-
-    geo_type: the type of the geo value
-    geo_value: the value of the geo
-    start_date: the start date of the data
-    end_date: the end date of the data
-
-    Returns
-    ----------
-        dataframe of the covid data
-
-    """
-
-    # --checking inputs
-    if not (geo_type == "state" or geo_type == "county"):
-        raise Exception("geo_type must be 'state' or 'county'")
-    if start_date is None:
-        start_date = date(2020, 1, 22)
-
-    if isinstance(start_date, str):
-        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-
-    if isinstance(end_date, str):
-        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
-
-    # --call to Delphi API for incident cases
-    data = covidcast.signal(
-        data_source="jhu-csse",
-        signal="confirmed_incidence_num",
-        geo_type=geo_type,
-        geo_values=geo_values,
-        start_day=start_date,
-        end_day=end_date,
-    )
-
-    if geo_type == "county":
-        # --configure df
-        df = data[["time_value", "geo_value", "value"]]
-        df = df.rename(columns={"geo_value": "location", "time_value": "date"})
-        df["location"] = df["location"].astype(int).astype(str)
-        # --change fip to name
-        df["location_name"] = covidcast.fips_to_name(df["location"])
-    else:
-        # --configure df
-        df = pd.DataFrame()
-        df["date"] = data["time_value"]
-        # df["location"] = [x[0:2] for x in covidcast.abbr_to_fips(data["geo_value"], ignore_case=True)]
-        # --change all values to uppercase
-        df["location"] = data["geo_value"].apply(lambda x: x.upper())
-        # --change all abbrivations to full name
-        df["location_name"] = covidcast.abbr_to_name(
-            data["geo_value"], ignore_case=True
-        )
-        df["value"] = data["value"]
-    return df
-
-
-def get_raw_truth_df(url) -> pd.DataFrame:
-    """
-    Gets raw csv and turns it into dataframe
-    """
-    url_req = requests.get(url).content
-    return pd.read_csv(io.StringIO(url_req.decode("utf-8")))
 
 
 def daily_to_weekly(data):
@@ -280,9 +163,6 @@ def daily_to_weekly(data):
     return weekly_date.rename(columns={"start_date": "date", "cases": "value"})
 
 
-DATA_URL = "https://raw.githubusercontent.com/computationalUncertaintyLab/chimeric-tools/abe_sim/src/chimeric_tools/data/truth-Incident%20Cases.csv"
-
-
 class CovidData(object):
     """
     Class to Manage COVID Data
@@ -301,8 +181,6 @@ class CovidData(object):
 
         """
 
-        __DATA_PATH = os.path.dirname(__file__) + "/data/d"
-
         # --does the df have the right colums
         if isinstance(custom_data, pd.DataFrame):
             if custom_data.empty:
@@ -313,11 +191,13 @@ class CovidData(object):
                 )
             self.data = custom_data
         else:
-            if not check_for_data(__DATA_PATH):
-                print(
-                    "Downloading data...you must have gone out of you way to delete the data in lib :)"
-                )
-                get_raw_truth_df(DATA_URL).to_csv(__DATA_PATH)
+            # TODO: add a way to download data from github in bulk and check if any data is missing
+            # if not check_for_data(__DATA_PATH):
+            #     print(
+            #         "Downloading data...you must have gone out of you way to delete the data in lib :)"
+            #     )
+            #     get_raw_truth_df(DATA_URL).to_csv(__DATA_PATH)
+            pass
 
 
         if include is None: 
@@ -386,21 +266,9 @@ class CovidData(object):
             self.start_date = min_date
         if self.end_date > max_date:
             warnings.warn(
-                "end_date is after the latest date in the data. We will download this data for you. It might take some time"
+                "end_date is after the latest date in the data. Now using default end date"
             )
-            # --check if the data is already downloaded
-            self.file_hash = self.create_file_hash()
-            file_path = os.path.dirname(__file__) + "/data" + self.file_hash + ".csv"
-            if check_for_data(file_path):
-                self.data = pd.read_csv(file_path)
-            else:
-                # loc data that we already have
-                loc_data = self.download_data(
-                    start_date=max_date + timedelta(days=1), end_date=self.end_date
-                )
-                self.data = pd.concat([self.data, loc_data])
-                print(self.data)
-                self.data = model(self.data)
+            self.end_date = max_date
 
         # --loc all data
         mask = (
@@ -408,51 +276,3 @@ class CovidData(object):
             | (self.data["date"] <= self.end_date)
         ) & (self.data["location"].isin(self.geo_values))
         self.data = self.data.loc[mask]
-
-    def create_file_hash(self):
-        """
-        Creates a hash of the data
-        """
-        self.geo_values.sort()
-        # --create hash of all FIPS and start and end dates
-        hash_string = (
-            "".join([str(i) for i in self.geo_values])
-            + (str(self.start_date))
-            + (str(self.end_date))
-        )
-        return hash_string
-
-    def download_data(self, start_date: Optional[date], end_date: Optional[date]):
-        """
-        Downloads all geo values data that is not in not on file
-        """
-        # --sort state and county FIPS
-        mask = np.array([len(_) >= 4 for _ in self.geo_values])
-        county_values = self.geo_values[mask]
-        state_values = covidcast.fips_to_abbr(self.geo_values[~mask])
-
-        # --create empty df
-        county = pd.DataFrame(columns=["date", "location", "location_name", "value"])
-        state = pd.DataFrame(columns=["date", "location", "location_name", "value"])
-
-        # --download county data
-        if len(county_values) > 0:
-            print("Downloading county data")
-            county = get_unique_covid_data(
-                geo_type="county",
-                geo_values=county_values,
-                start_date=start_date,
-                end_date=end_date,
-            )
-        # --download state data
-        if len(state_values) > 0:
-            print("Downloading state data")
-            state_values = np.char.upper(state_values)
-            state = get_unique_covid_data(
-                geo_type="state",
-                geo_values=state_values,
-                start_date=start_date,
-                end_date=end_date,
-            )
-
-        return pd.concat([county, state])
