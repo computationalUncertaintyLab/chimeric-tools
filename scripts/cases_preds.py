@@ -15,11 +15,13 @@ if __name__ == "__main__":
     # --convert to weekly data and save
     weekly = daily_to_weekly(data)
     weekly.to_csv(
-        "../src/chimeric_tools/data/truh-Incident WeeklyCases.csv.gz",
+        "../src/chimeric_tools/data/truth-Incident WeeklyCases.csv.gz",
         index=False,
         compression="gzip",
     )
+
     weekly = model(weekly)
+    weekly = weekly.rename(columns={"value": "cases", "preds": "preds_cases", "residuals": "residuals_cases"})
     weekly.to_csv(
         "../src/chimeric_tools/data/cases_weekly.csv.gz", index=False, compression="gzip"
     )
