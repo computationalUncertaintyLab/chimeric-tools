@@ -29,7 +29,6 @@ jobs:
         path: covidData
 
     - name: Install R dependencies (for covidData + covidHubUtils)
-      working-directory: ./chimeric_tools
       run: Rscript scripts/install_dependencies.R
       env:
         GITHUB_PAT: ${{ secrets.github_token }}
@@ -44,11 +43,9 @@ jobs:
       run: pip3 install -r requirements.txt
 
     - name: Get data truths
-      working-directory: ./chimeric_tools
       run: bash scripts/update_data.sh
 
     - name: Push generated files to GitHub
-      working-directory: ./chimeric_tools
       run: bash scripts/push-gh.sh
       env:
         GITHUB_PAT: ${{ secrets.github_token }}
