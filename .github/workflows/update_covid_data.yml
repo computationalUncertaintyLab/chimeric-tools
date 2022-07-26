@@ -39,10 +39,9 @@ jobs:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
     
-    - name: Install Python Requirements
-      run: |
-        pip3 install -r requirements.txt \
-        pip3 install -e .
+    - name: Install requirements
+      run: pip install -r requirements.txt
+           pip install -e .
 
     - name: Get data truths
       run: bash scripts/update_data.sh
