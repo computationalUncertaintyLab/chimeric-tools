@@ -15,6 +15,7 @@
    
       check_for_data
       daily_to_weekly
+      download_from_github
       load_cases_truths
       load_cases_weekly
       load_deaths_truths
