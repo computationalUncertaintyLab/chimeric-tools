@@ -13,10 +13,8 @@ import requests
 import pkg_resources
 import covidcast
 from epiweeks import Week
-from chimeric_tools.models import model
 
-
-def check_for_data(path: str) -> bool:
+def check_for_data(filename: str) -> bool:
     """
     Check to see if a  file exists
 
@@ -24,7 +22,7 @@ def check_for_data(path: str) -> bool:
     ----------
         path : str path to the file that is being checked
     """
-    return os.path.exists(path)
+    return os.path.exists("".join(os.path.dirname(__file__) + "/data/" + filename))
 
 
 def load_cases_truths():
@@ -35,7 +33,11 @@ def load_cases_truths():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(__name__, "data/truth-Incident Cases.csv.gz")
+    filename = "truth-Incident Cases.csv.gz"
+
+    if not check_for_data(filename):
+        download_from_github(filename)
+    stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
@@ -49,7 +51,11 @@ def load_deaths_truths():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(__name__, "data/truth-Incident Deaths.csv.gz")
+    filename = "truth-Incident Deaths.csv.gz"
+
+    if not check_for_data(filename):
+        download_from_github(filename)
+    stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
@@ -63,9 +69,11 @@ def load_hosps_truths():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(
-        __name__, "data/truth-Incident Hospitalizations.csv.gz"
-    )
+    filename = "truth-Incident Hospitalizations.csv.gz"
+    
+    if not check_for_data(filename):
+        download_from_github(filename)
+    stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
@@ -79,7 +87,11 @@ def load_cases_weekly():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(__name__, "data/cases_weekly.csv.gz")
+    filename = "cases_weekly.csv.gz"
+
+    if not check_for_data(filename):
+        download_from_github(filename)
+    stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
@@ -93,7 +105,11 @@ def load_deaths_weekly():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(__name__, "data/deaths_weekly.csv.gz")
+    filename = "deaths_weekly.csv.gz"
+
+    if not check_for_data(filename):
+        download_from_github(filename)
+    stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
@@ -107,7 +123,11 @@ def load_hosps_weekly():
     ----------
         dataframe
     """
-    stream = pkg_resources.resource_stream(__name__, "data/hosps_weekly.csv.gz")
+    filename = "hosps_weekly.csv.gz"
+
+    if not check_for_data(filename):
+        download_from_github(filename)
+    stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
     return data
@@ -163,6 +183,23 @@ def daily_to_weekly(data):
     return weekly_date.rename(columns={"start_date": "date", "cases": "value"})
 
 
+def download_from_github(filename) -> None:
+    """
+    Downloads files from github and saves them to the data folder
+
+    Parameters
+    ----------
+        url : str
+            url to the file to be downloaded
+    
+    """
+    url = "https://github.com/computationalUncertaintyLab/chimeric-tools/raw/main/src/chimeric_tools/data/" + filename
+    save_path = "".join(os.path.dirname(__file__) + "/data/" + filename)
+    with open(save_path, "wb") as f:
+        r = requests.get(url)
+        f.write(r.content)
+
+
 class CovidData(object):
     """
     Class to Manage COVID Data
@@ -192,11 +229,6 @@ class CovidData(object):
             self.data = custom_data
         else:
             # TODO: add a way to download data from github in bulk and check if any data is missing
-            # if not check_for_data(__DATA_PATH):
-            #     print(
-            #         "Downloading data...you must have gone out of you way to delete the data in lib :)"
-            #     )
-            #     get_raw_truth_df(DATA_URL).to_csv(__DATA_PATH)
             pass
 
 
@@ -219,7 +251,7 @@ class CovidData(object):
                         is_first = False
                     else:
                         self.data = self.data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
-                elif i == "hospitals":
+                elif i == "hosps":
                     if is_first:
                         self.data = load_hosps_weekly()
                         is_first = False
@@ -229,6 +261,7 @@ class CovidData(object):
                     raise Exception("include must be 'cases', 'deaths', or 'hospitals'")
 
         self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
+        self.data["end_date"] = pd.to_datetime(self.data["end_date"]).dt.date
         self.data["location"] = self.data["location"].astype(str)
 
         # --sets to geo_values to right type
@@ -245,20 +278,22 @@ class CovidData(object):
         max_date = max(self.data["date"])
         min_date = min(self.data["date"])
 
-        if isinstance(start_date, str):
-            self.start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        else:
-            self.start_date = start_date
-        if isinstance(end_date, str):
-            self.end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
-        else:
-            self.end_date = end_date
 
         # --set start and end dates
-        if self.start_date is None:
+        if start_date is None:
             self.start_date = min_date
-        if self.end_date is None:
+        elif isinstance(start_date, str):
+            self.start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        elif isinstance(start_date, date):
+            self.start_date = start_date
+        if end_date is None:
             self.end_date = max_date
+        elif isinstance(end_date, str):
+            self.end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        elif isinstance(end_date, date):
+            self.end_date = end_date
+
+        # --correct start and end dates if they are out of range
         if self.start_date < min_date:
             warnings.warn(
                 "start_date is before the earliest date in the data. Now using default start date"
@@ -270,9 +305,14 @@ class CovidData(object):
             )
             self.end_date = max_date
 
+        # --set the date to the start of the week
+        self.start_date = Week.fromdate(self.start_date).startdate()
+        self.end_date = Week.fromdate(self.end_date).enddate()
+        
         # --loc all data
         mask = (
             (self.data["date"] >= self.start_date)
-            | (self.data["date"] <= self.end_date)
+            & (self.data["date"] <= self.end_date)
         ) & (self.data["location"].isin(self.geo_values))
         self.data = self.data.loc[mask]
+        
