@@ -47,6 +47,6 @@ jobs:
       run: bash scripts/update_data.sh
 
     - name: Push generated files to GitHub
-      run: bash scripts/push-gh.sh
+      run: bash scripts/push.sh
       env:
         GITHUB_PAT: ${{ secrets.github_token }}
