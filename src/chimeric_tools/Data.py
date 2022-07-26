@@ -271,8 +271,10 @@ class CovidData(object):
             self.geo_values = np.array(geo_values)
         elif isinstance(geo_values, str):
             self.geo_values = np.array([geo_values])
-        else:
+        elif isinstance(geo_values, np.ndarray):
             self.geo_values = geo_values
+        else:
+            raise Exception("geo_values must be a list, string, or numpy array")
 
         # --get current dates
         max_date = max(self.data["date"])
@@ -315,4 +317,3 @@ class CovidData(object):
             & (self.data["date"] <= self.end_date)
         ) & (self.data["location"].isin(self.geo_values))
         self.data = self.data.loc[mask]
-        
