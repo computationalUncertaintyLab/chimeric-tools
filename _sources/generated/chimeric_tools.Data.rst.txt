@@ -15,8 +15,6 @@
    
       check_for_data
       daily_to_weekly
-      get_raw_truth_df
-      get_unique_covid_data
       load_cases_truths
       load_cases_weekly
       load_deaths_truths
