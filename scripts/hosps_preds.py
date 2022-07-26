@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # --convert to weekly data and save
     weekly = daily_to_weekly(data)
     weekly.to_csv(
-        "../src/chimeric_tools/data/truth-Incident WeeklyHosps.csv.gz",
+        "./src/chimeric_tools/data/truth-Incident WeeklyHosps.csv.gz",
         index=False,
         compression="gzip",
     )
@@ -23,5 +23,5 @@ if __name__ == "__main__":
     weekly = weekly.rename(columns={"value": "hosps", "preds": "preds_hosps", "residuals": "residuals_hosps"})
 
     weekly.to_csv(
-        "../src/chimeric_tools/data/hosps_weekly.csv.gz", index=False, compression="gzip"
+        "./src/chimeric_tools/data/hosps_weekly.csv.gz", index=False, compression="gzip"
     )
