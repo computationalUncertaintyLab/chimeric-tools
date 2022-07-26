@@ -1,16 +1,16 @@
 #!/bin/sh
 echo "Unzipping Files"
-gzip -d /src/chimeric_tools/data/truth-Incident\ Cases.csv.gz
-gzip -d /src/chimeric_tools/data/truth-Incident\ Deaths.csv.gz
-gzip -d /src/chimeric_tools/data/truth-Incident\ Hospitalizations.csv.gz
+gzip -d ./src/chimeric_tools/data/truth-Incident\ Cases.csv.gz
+gzip -d ./src/chimeric_tools/data/truth-Incident\ Deaths.csv.gz
+gzip -d ./src/chimeric_tools/data/truth-Incident\ Hospitalizations.csv.gz
 
 echo "Downloading Files"
 Rscript download_truths.R
 
 echo "Zipping Files"
-gzip /src/chimeric_tools/data/truth-Incident\ Cases.csv
-gzip /src/chimeric_tools/data/truth-Incident\ Deaths.csv
-gzip /src/chimeric_tools/data/truth-Incident\ Hospitalizations.csv
+gzip ./src/chimeric_tools/data/truth-Incident\ Cases.csv
+gzip ./src/chimeric_tools/data/truth-Incident\ Deaths.csv
+gzip ./src/chimeric_tools/data/truth-Incident\ Hospitalizations.csv
 
 echo "Case Predictions"
 python scripts/cases_preds.py
