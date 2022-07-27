@@ -19,4 +19,4 @@ statsmodels
 pytest
 pytest-cov
 covidcast
-arch-py
+arch
