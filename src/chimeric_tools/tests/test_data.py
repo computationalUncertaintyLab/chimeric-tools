@@ -24,7 +24,9 @@ def test_load_weekly_covid():
     assert isinstance(load_hosps_weekly(), pd.DataFrame)
 
 def test_weekly():
-    assert isinstance(daily_to_weekly(load_cases_truths()), pd.DataFrame)
+    data = load_cases_truths()
+    data = data.loc[data["location"].isin(["US", "42"])]
+    assert isinstance(daily_to_weekly(data), pd.DataFrame)
 
 def test_data():
     assert isinstance(CovidData().data, pd.DataFrame)

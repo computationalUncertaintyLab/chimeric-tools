@@ -57,6 +57,8 @@ class COVID(object):
             self.geo_values = geo_values
             self.p = None
         elif isinstance(geo_values, dict):
+            if sum(geo_values.values()) != 1:
+                raise ValueError("geo_values must sum to 1")
             self.geo_values = np.array(list(geo_values.keys()))
             self.p = np.array(list(geo_values.values()))
         elif isinstance(geo_values, str):
