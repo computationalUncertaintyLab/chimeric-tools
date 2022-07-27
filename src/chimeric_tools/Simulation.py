@@ -14,7 +14,7 @@ from typing import (
 from datetime import date
 import numpy as np
 import pandas as pd
-from chimeric_tools.data import CovidData
+from chimeric_tools.Data import CovidData
 from arch.bootstrap import CircularBlockBootstrap
 
 
@@ -41,9 +41,10 @@ class COVID(object):
 
     def __init__(
         self,
-        start_date: Union[date, None] = None,
-        end_date: Union[date, None] = None,
+        start_date: Union[date, str, None] = None,
+        end_date: Union[date, str, None] = None,
         geo_values: Union[np.ndarray, Dict[str, float], str, list, None] = None,
+        include: Union[list, None] = None,
         custom_data: Optional[pd.DataFrame] = None,
         seed: Union[None, int, Generator] = None,
     ) -> None:
@@ -65,11 +66,19 @@ class COVID(object):
             self.geo_values = None
             self.p = None
         
+        if include is None: 
+            self.include = ["cases", "deaths", "hosps"]
+        elif isinstance(include, list):
+            self.include = include
+        else:
+            raise Exception("include must be a list or None")
+
         # --get covid data from data class
         self.data = CovidData(
             start_date=start_date,
             end_date=end_date,
             geo_values=self.geo_values,
+            include=include,
             custom_data=custom_data,
         ).data
         if geo_values is None:
@@ -104,7 +113,19 @@ class COVID(object):
         # --for each geo value boostrap the residuals and add to data
         for geo_value in geo_for_sample:
             sub_data = self.data[self.data["location"] == geo_value].reset_index()
-            bs = CircularBlockBootstrap(5, sub_data["residuals"])
+
+            # --assemble dictionary of bootstrapped data
+            kwargs = {}
+            for i in self.include:
+                res = "".join("residuals_" + i)
+                kwargs[i] = sub_data[res]
+
+            # --bootstrap the data    
+            bs = CircularBlockBootstrap(5, **kwargs)
             for data in bs.bootstrap(1):
-                sim_data = (data[0][0]).reset_index(drop=True) + sub_data["preds"]
+                sim_data = data[1]
+
+                for i in self.include:
+                    preds = "".join("preds_" + i)
+                    sim_data[i] = sim_data[i].reset_index(drop=True) + sub_data[preds]
                 yield (sim_data, geo_value)

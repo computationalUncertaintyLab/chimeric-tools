@@ -233,32 +233,34 @@ class CovidData(object):
 
 
         if include is None: 
-            self.data = load_cases_weekly()
-            self.data = self.data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
-            self.data = self.data.merge(load_hosps_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            self.include = ["cases", "deaths", "hosps"]
         elif isinstance(include, list):
-            is_first = True
-            for i in include:
-                if i == "cases":
-                    if is_first:
-                        self.data = load_cases_weekly()
-                        is_first = False
-                    else:
-                        self.data = self.data.merge(load_cases_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
-                elif i == "deaths":
-                    if is_first:
-                        self.data = load_deaths_weekly()
-                        is_first = False
-                    else:
-                        self.data = self.data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
-                elif i == "hosps":
-                    if is_first:
-                        self.data = load_hosps_weekly()
-                        is_first = False
-                    else:
-                        self.data = self.data.merge(load_hosps_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            self.include = include
+        else:
+            raise Exception("include must be a list or None")
+        
+        is_first = True
+        for i in self.include:
+            if i == "cases":
+                if is_first:
+                    self.data = load_cases_weekly()
+                    is_first = False
                 else:
-                    raise Exception("include must be 'cases', 'deaths', or 'hospitals'")
+                    self.data = self.data.merge(load_cases_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            elif i == "deaths":
+                if is_first:
+                    self.data = load_deaths_weekly()
+                    is_first = False
+                else:
+                    self.data = self.data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            elif i == "hosps":
+                if is_first:
+                    self.data = load_hosps_weekly()
+                    is_first = False
+                else:
+                    self.data = self.data.merge(load_hosps_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            else:
+                raise Exception("include must be 'cases', 'deaths', or 'hospitals'")
 
         self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
         self.data["end_date"] = pd.to_datetime(self.data["end_date"]).dt.date
