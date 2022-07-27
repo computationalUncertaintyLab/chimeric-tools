@@ -14,7 +14,7 @@ from typing import (
 from datetime import date
 import numpy as np
 import pandas as pd
-from chimeric_tools.Data import CovidData
+from chimeric_tools.Data import covid_data
 from arch.bootstrap import CircularBlockBootstrap
 
 
@@ -45,7 +45,6 @@ class COVID(object):
         end_date: Union[date, str, None] = None,
         geo_values: Union[np.ndarray, Dict[str, float], str, list, None] = None,
         include: Union[list, None] = None,
-        custom_data: Optional[pd.DataFrame] = None,
         seed: Union[None, int, Generator] = None,
     ) -> None:
 
@@ -76,13 +75,12 @@ class COVID(object):
             raise Exception("include must be a list or None")
 
         # --get covid data from data class
-        self.data = CovidData(
+        self.data = covid_data(
             start_date=start_date,
             end_date=end_date,
             geo_values=self.geo_values,
             include=include,
-            custom_data=custom_data,
-        ).data
+        )
         if geo_values is None:
             self.geo_values = self.data["location"].unique()
 

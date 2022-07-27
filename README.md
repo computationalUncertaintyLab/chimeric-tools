@@ -41,8 +41,8 @@ Read the release documentation [here](https://computationaluncertaintylab.github
 ### Covid Data
 
 ```python
-from chimeric_tools.Data import CovidData
-data = CovidData(start_date = "2021-01-01", end_date = "2021-12-31", geo_values = "US", include = ["cases", "deaths", "hosps"]).data
+from chimeric_tools.Data import covid_data
+data = covid_data(start_date = "2021-01-01", end_date = "2021-12-31", geo_values = "US", include = ["cases", "deaths", "hosps"])
 data.head()
 ```
 

@@ -200,122 +200,116 @@ def download_from_github(filename) -> None:
         f.write(r.content)
 
 
-class CovidData(object):
-    """
-    Class to Manage COVID Data
-    """
-
-    def __init__(
-        self,
-        start_date: Union[date, None] = None,
-        end_date: Union[date, None] = None,
+def covid_data(
+        start_date: Union[date, str, None] = None,
+        end_date: Union[date, str, None] = None,
         geo_values: Union[np.ndarray, list, str, None] = None,
         include: Union[list, None] = None,
-        custom_data: Optional[pd.DataFrame] = None,
     ):
-        """
-        Initialize the COVID_DATA class
+    """
+    Processes Covid Data
 
-        """
-
-        # --does the df have the right colums
-        if isinstance(custom_data, pd.DataFrame):
-            if custom_data.empty:
-                raise Exception("custom_data is empty")
-            if not {"date", "location", "value"}.issubset(custom_data.columns):
-                raise Exception(
-                    "custom_data must have columns 'date', 'location', and 'value'"
-                )
-            self.data = custom_data
-        else:
-            # TODO: add a way to download data from github in bulk and check if any data is missing
-            pass
-
-
-        if include is None: 
-            self.include = ["cases", "deaths", "hosps"]
-        elif isinstance(include, list):
-            self.include = include
-        else:
-            raise Exception("include must be a list or None")
+    Parameters
+    ----------
+        start_date: date or str
+            start date of data to be returned
+        end_date: date or str
+            end date of data to be returned
+        geo_values: np.ndarray or list or str
+            list of locations to be returned
+        include: list
+            list of data to be returned
         
-        is_first = True
-        for i in self.include:
-            if i == "cases":
-                if is_first:
-                    self.data = load_cases_weekly()
-                    is_first = False
-                else:
-                    self.data = self.data.merge(load_cases_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
-            elif i == "deaths":
-                if is_first:
-                    self.data = load_deaths_weekly()
-                    is_first = False
-                else:
-                    self.data = self.data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
-            elif i == "hosps":
-                if is_first:
-                    self.data = load_hosps_weekly()
-                    is_first = False
-                else:
-                    self.data = self.data.merge(load_hosps_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+    Returns
+    ----------
+        dataframe
+
+    """
+
+    if include is None: 
+        include = ["cases", "deaths", "hosps"]
+    elif isinstance(include, list):
+        pass
+    else:
+        raise Exception("include must be a list or None")
+    
+    is_first = True
+    for i in include:
+        if i == "cases":
+            if is_first:
+                data = load_cases_weekly()
+                is_first = False
             else:
-                raise Exception("include must be 'cases', 'deaths', or 'hospitals'")
-
-        self.data["date"] = pd.to_datetime(self.data["date"]).dt.date
-        self.data["end_date"] = pd.to_datetime(self.data["end_date"]).dt.date
-        self.data["location"] = self.data["location"].astype(str)
-
-        # --sets to geo_values to right type
-        if geo_values is None:
-            self.geo_values = self.data["location"].unique()
-        elif isinstance(geo_values, list):
-            self.geo_values = np.array(geo_values)
-        elif isinstance(geo_values, str):
-            self.geo_values = np.array([geo_values])
-        elif isinstance(geo_values, np.ndarray):
-            self.geo_values = geo_values
+                data = data.merge(load_cases_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+        elif i == "deaths":
+            if is_first:
+                data = load_deaths_weekly()
+                is_first = False
+            else:
+                data = data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+        elif i == "hosps":
+            if is_first:
+                data = load_hosps_weekly()
+                is_first = False
+            else:
+                data = data.merge(load_hosps_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
         else:
-            raise Exception("geo_values must be a list, string, or numpy array")
+            raise Exception("include must be 'cases', 'deaths', or 'hospitals'")
 
-        # --get current dates
-        max_date = max(self.data["date"])
-        min_date = min(self.data["date"])
+    data["date"] = pd.to_datetime(data["date"]).dt.date
+    data["end_date"] = pd.to_datetime(data["end_date"]).dt.date
+    data["location"] = data["location"].astype(str)
+
+    # --sets to geo_values to right type
+    if geo_values is None:
+        geo_values = data["location"].unique()
+    elif isinstance(geo_values, list):
+        geo_values = np.array(geo_values)
+    elif isinstance(geo_values, str):
+        geo_values = np.array([geo_values])
+    elif isinstance(geo_values, np.ndarray):
+        pass
+    else:
+        raise Exception("geo_values must be a list, string, or numpy array")
+
+    # --get current dates
+    max_date = max(data["date"])
+    min_date = min(data["date"])
 
 
-        # --set start and end dates
-        if start_date is None:
-            self.start_date = min_date
-        elif isinstance(start_date, str):
-            self.start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        elif isinstance(start_date, date):
-            self.start_date = start_date
-        if end_date is None:
-            self.end_date = max_date
-        elif isinstance(end_date, str):
-            self.end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
-        elif isinstance(end_date, date):
-            self.end_date = end_date
+    # --set start and end dates
+    if start_date is None:
+        start_date = min_date
+    elif isinstance(start_date, str):
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+    elif isinstance(start_date, date):
+        start_date = start_date
+    if end_date is None:
+        end_date = max_date
+    elif isinstance(end_date, str):
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+    elif isinstance(end_date, date):
+        end_date = end_date
 
-        # --correct start and end dates if they are out of range
-        if self.start_date < min_date:
-            warnings.warn(
-                "start_date is before the earliest date in the data. Now using default start date"
-            )
-            self.start_date = min_date
-        if self.end_date > max_date:
-            warnings.warn(
-                "end_date is after the latest date in the data. Now using default end date"
-            )
-            self.end_date = max_date
+    # --correct start and end dates if they are out of range
+    if start_date < min_date:
+        warnings.warn(
+            "start_date is before the earliest date in the data. Now using default start date"
+        )
+        start_date = min_date
+    if end_date > max_date:
+        warnings.warn(
+            "end_date is after the latest date in the data. Now using default end date"
+        )
+        end_date = max_date
 
-        # --set the date to the start of the week
-        self.start_date = Week.fromdate(self.start_date).startdate()
-        self.end_date = Week.fromdate(self.end_date).enddate()
-        
-        # --loc all data
-        mask = (
-            (self.data["date"] >= self.start_date)
-            & (self.data["date"] <= self.end_date)
-        ) & (self.data["location"].isin(self.geo_values))
-        self.data = self.data.loc[mask]
+    # --set the date to the start of the week
+    start_date = Week.fromdate(start_date).startdate()
+    end_date = Week.fromdate(end_date).enddate()
+    
+    # --loc all data
+    mask = (
+        (data["date"] >= start_date)
+        & (data["date"] <= end_date)
+    ) & (data["location"].isin(geo_values))
+    return data.loc[mask]
