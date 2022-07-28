@@ -1,9 +1,5 @@
 """
-berlin
-
 Simulate COVID data
-
-
 """
 from typing import (
     Dict,
@@ -37,6 +33,16 @@ class COVID(object):
 
     Examples
     --------
+
+    >>> from chimeric_tools.Simulation import COVID
+    >>> import matplotlib.pyplot as plt
+    >>> bs = COVID(start_date = "2021-01-01", end_date = "2021-12-31", geo_values = "US", include = ["cases"])
+    >>> for data in bs.simulate(100):
+    >>>     plt.plot(data[0]["cases"], color= "tab:blue", alpha = 0.1)
+    >>> plt.xlabel("Weeks")
+    >>> plt.ylabel("Cases")
+    >>> plt.title("Covid Simulation of FIP: " + data[1])
+    >>> plt.show()
     """
 
     def __init__(

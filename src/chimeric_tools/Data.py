@@ -224,6 +224,12 @@ def covid_data(
     ----------
         dataframe
 
+    Examples
+    ----------
+    >>> from chimeric_tools.Data import covid_data
+    >>> data = covid_data(start_date = "2021-01-01", end_date = "2021-12-31", geo_values = "US", include = ["cases", "deaths", "hosps"])
+    >>> data.head()
+
     """
 
     if include is None: 
