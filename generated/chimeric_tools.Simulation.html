@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>chimeric_tools.Data &mdash; chimeric_tools 0.0.1 documentation</title>
+  <title>chimeric_tools.Simulation &mdash; chimeric_tools 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -64,9 +64,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>chimeric_tools.Data</li>
+      <li>chimeric_tools.Simulation</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/chimeric_tools.Data.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/chimeric_tools.Simulation.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -74,45 +74,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-chimeric_tools.Data">
-<span id="chimeric-tools-data"></span><h1>chimeric_tools.Data<a class="headerlink" href="#module-chimeric_tools.Data" title="Permalink to this headline"></a></h1>
-<p>Classes to keep data up to date</p>
-<p class="rubric">Functions</p>
+  <section id="module-chimeric_tools.Simulation">
+<span id="chimeric-tools-simulation"></span><h1>chimeric_tools.Simulation<a class="headerlink" href="#module-chimeric_tools.Simulation" title="Permalink to this headline"></a></h1>
+<p>Simulate COVID data</p>
+<p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.check_for_data" title="chimeric_tools.Data.check_for_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_for_data</span></code></a>(filename)</p></td>
-<td><p>Check to see if a  file exists</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.covid_data" title="chimeric_tools.Data.covid_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">covid_data</span></code></a>([start_date, end_date, ...])</p></td>
-<td><p>Processes Covid Data</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.daily_to_weekly" title="chimeric_tools.Data.daily_to_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">daily_to_weekly</span></code></a>(data)</p></td>
-<td><p>Converts daily data into weekly data by summing all cases for that week.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.download_from_github" title="chimeric_tools.Data.download_from_github"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_from_github</span></code></a>(filename)</p></td>
-<td><p>Downloads files from github and saves them to the data folder</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.load_cases_truths" title="chimeric_tools.Data.load_cases_truths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_cases_truths</span></code></a>()</p></td>
-<td><p>Loads raw truth data from CSSE dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.load_cases_weekly" title="chimeric_tools.Data.load_cases_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_cases_weekly</span></code></a>()</p></td>
-<td><p>Load weekly data complete with model predictions and residuals</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.load_deaths_truths" title="chimeric_tools.Data.load_deaths_truths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_deaths_truths</span></code></a>()</p></td>
-<td><p>Loads raw truth data from CSSE dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.load_deaths_weekly" title="chimeric_tools.Data.load_deaths_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_deaths_weekly</span></code></a>()</p></td>
-<td><p>Load weekly data complete with model predictions and residuals</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.load_hosps_truths" title="chimeric_tools.Data.load_hosps_truths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_hosps_truths</span></code></a>()</p></td>
-<td><p>Loads raw truth data from CSSE dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Data.load_hosps_weekly" title="chimeric_tools.Data.load_hosps_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_hosps_weekly</span></code></a>()</p></td>
-<td><p>Load weekly data complete with model predictions and residuals</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#chimeric_tools.Simulation.COVID" title="chimeric_tools.Simulation.COVID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COVID</span></code></a>([start_date, end_date, geo_values, ...])</p></td>
+<td><p>Covid simulation class</p></td>
 </tr>
 </tbody>
 </table>

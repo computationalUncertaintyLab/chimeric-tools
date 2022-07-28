@@ -1,25 +1,55 @@
-.. chimeric_tools documentation master file, created by
-   sphinx-quickstart on Wed Mar 23 15:08:51 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Chimeric-Tools
+==========================
 
-Welcome to chimeric_tools's documentation!
-==========================================
+Features
+-------------------
+
+Current Working Features:
+
+* COVID-19 data for cases, deaths, and hosps
+* Simulation of COVID-19 data
+
+Features Coming Soon:
+
+* Baseline forecast models
+
+Installation
+-------------------
+
+For right now we suggest installing from GitHub because of the rapid development of this project
+
+pip
+^^^^^^^^^^^^^^^^^^^^^^
+ 
+Releases are available PyPI and can be installed with pip
+
+.. code:: console
+
+    $ pip install chimeric-tools
+
+
+You can alternatively install the latest version from GitHub
+
+.. code:: console
+   
+      $ pip install pip install git+https://github.com/computationalUncertaintyLab/chimeric-tools.git
+
+.. Hidden TOCs
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :caption: Documentation
+   :maxdepth: 1
 
-
-.. toctree::
-
+   background
+   installation
    usage
    api
 
+.. toctree::
+   :caption: Development
+   :maxdepth: 1
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   contributing
+   license
+   GitHub <https://github.com/computationalUncertaintyLab/chimeric-tools>
+   PyPI <https://pypi.org/project/chimeric-tools>

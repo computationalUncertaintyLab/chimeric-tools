@@ -1,10 +1,18 @@
-API
-===
+API Reference
+=============
 
-.. autosummary::
-    :toctree: generated
+Data
+-------------------
+.. automodule:: chimeric_tools.Data
+   :members:
 
-    chimeric_tools.Time
-    chimeric_tools.Spatial
-    chimeric_tools.Data
-    
+
+Simulation
+-------------------
+.. automodule:: chimeric_tools.Simulation
+   :members:
+
+Time
+-------------------
+.. automodule:: chimeric_tools.Time
+   :members:
