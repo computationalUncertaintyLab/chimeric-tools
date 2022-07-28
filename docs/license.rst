@@ -1,5 +1,7 @@
-Copyright (c) 2022, computationalUncertaintyLab @ Lehigh University
+License
+==========================
 
+Copyright (c) 2022, computationalUncertaintyLab @ Lehigh University
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

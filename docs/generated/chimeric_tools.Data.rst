@@ -1,0 +1,38 @@
+﻿chimeric\_tools.Data
+====================
+
+.. automodule:: chimeric_tools.Data
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      check_for_data
+      covid_data
+      daily_to_weekly
+      download_from_github
+      load_cases_truths
+      load_cases_weekly
+      load_deaths_truths
+      load_deaths_weekly
+      load_hosps_truths
+      load_hosps_weekly
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

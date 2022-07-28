@@ -13,14 +13,15 @@
 import os
 import sys
 import sphinx_theme
+import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('../src'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'chimeric_tools'
-copyright = '2022, Wenxuan Ye'
-author = 'Wenxuan Ye'
+copyright = '2022, Abraham Berlin, Wenxuan Ye'
+author = 'Abraham Berlin, Wenxuan Ye'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
@@ -35,6 +36,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'sphinx_mdinclude',    
+    'sphinx_rtd_theme',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,9 +54,9 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'stanford_theme'
-html_theme_path = [sphinx_theme.get_html_theme_path('stanford-theme')]
+html_theme = 'sphinx_rtd_theme'
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = []

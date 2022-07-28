@@ -13,6 +13,8 @@ sphinx-book-theme>=0.1.7
 Sphinx>=4.3
 sphinxcontrib-bibtex
 sphinx_theme
+sphinx-rtd-theme
+sphinx-mdinclude
 epiweeks
 delphi_epidata
 statsmodels
