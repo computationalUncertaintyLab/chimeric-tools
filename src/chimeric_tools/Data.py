@@ -205,6 +205,7 @@ def covid_data(
         end_date: Union[date, str, None] = None,
         geo_values: Union[np.ndarray, list, str, None] = None,
         include: Union[list, None] = None,
+        preds: bool = True
     ):
     """
     Processes Covid Data
@@ -247,20 +248,26 @@ def covid_data(
                 is_first = False
             else:
                 data = data.merge(load_cases_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            if not preds:
+                data = data.drop(columns=["preds_cases", "residuals_cases"])
         elif i == "deaths":
             if is_first:
                 data = load_deaths_weekly()
                 is_first = False
             else:
                 data = data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            if not preds:
+                data = data.drop(columns=["preds_deaths", "residuals_deaths"])
         elif i == "hosps":
             if is_first:
                 data = load_hosps_weekly()
                 is_first = False
             else:
                 data = data.merge(load_hosps_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
+            if not preds:
+                data = data.drop(columns=["preds_hosps", "residuals_hosps"])
         else:
-            raise Exception("include must be 'cases', 'deaths', or 'hospitals'")
+            raise ValueError("include must be 'cases', 'deaths', or 'hospitals'")
 
     data["date"] = pd.to_datetime(data["date"]).dt.date
     data["end_date"] = pd.to_datetime(data["end_date"]).dt.date
@@ -276,7 +283,7 @@ def covid_data(
     elif isinstance(geo_values, np.ndarray):
         pass
     else:
-        raise Exception("geo_values must be a list, string, or numpy array")
+        raise ValueError("geo_values must be a list, string, or numpy array")
 
     # --get current dates
     max_date = max(data["date"])

@@ -19,6 +19,11 @@ def test_pick_geo_values():
 
 def test_generator():
     assert np.array_equal(COVID(geo_values=["US","42"], seed = 1).pick_geo_values(5), COVID(geo_values=["US","42"], seed = 1).pick_geo_values(5))
+    gen = np.random.default_rng(1)
+    gen1 = np.random.default_rng(1)
+    assert np.array_equal(COVID(geo_values=["US","42"], seed = gen).pick_geo_values(5), COVID(geo_values=["US","42"], seed = gen1).pick_geo_values(5))
+    with pytest.raises(TypeError):
+        COVID(seed = "1")
 
 def test_simulation():
     bs = COVID()

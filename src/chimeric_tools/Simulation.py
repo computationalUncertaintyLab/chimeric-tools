@@ -51,7 +51,7 @@ class COVID(object):
         end_date: Union[date, str, None] = None,
         geo_values: Union[np.ndarray, Dict[str, float], str, list, None] = None,
         include: Union[list, None] = None,
-        seed: Union[None, int, Generator] = None,
+        seed: Union[None, int, np.random.Generator] = None,
     ) -> None:
 
         self.start_date = start_date
@@ -91,7 +91,7 @@ class COVID(object):
             self.geo_values = self.data["location"].unique()
 
         # --set seed
-        if isinstance(seed, Generator):
+        if isinstance(seed, np.random.Generator):
             self.generator = seed
         elif isinstance(seed, (int, np.integer)):
             self.generator = np.random.default_rng(int(seed))

@@ -34,7 +34,7 @@ def test_data():
     
 def test_date():
     assert min(covid_data(start_date="2019-01-01", end_date="2022-01-02")["date"]) == date(2020,1,19)
-    #assert max(covid_data(start_date="2019-01-01", end_date="2023-01-02")["date"]) == date.today() - timedelta(days=1)
+    assert max(covid_data(start_date="2019-01-01", end_date="2023-01-02")["date"]) == datetime.strptime(max(load_cases_weekly()["date"]), "%Y-%m-%d").date()
     assert min(covid_data(start_date="2022-01-01", end_date="2022-01-30")["date"]) == Week.fromdate(date(2022,1,1)).startdate()
     assert max(covid_data(start_date="2022-01-01", end_date="2022-01-30")["end_date"]) == Week.fromdate(date(2022,1,30)).enddate()
     assert min(covid_data(start_date=date(2022,1,1), end_date=date(2022,1,30))["date"]) == Week.fromdate(date(2022,1,1)).startdate()
@@ -43,11 +43,19 @@ def test_date():
 def test_data_sources():
     assert np.isin(["cases", "deaths", "hosps"], covid_data(include = ["cases", "deaths" , "hosps"]).columns.to_list()).all()
     assert np.isin(["cases", "deaths"], covid_data(include = ["cases", "deaths"]).columns.to_list()).all()
-    assert np.isin(["hosps", "cases"], covid_data(include = ["cases", "hosps"]).columns.to_list()).all()
+    assert np.isin(["hosps", "cases"], covid_data(include = ["hosps", "cases"]).columns.to_list()).all()
     assert np.isin(["deaths", "hosps"], covid_data(include = ["deaths", "hosps"]).columns.to_list()).all()
     assert np.isin(["cases"], covid_data(include = ["cases"]).columns.to_list()).all()
+    with pytest.raises(ValueError):
+        covid_data(include = ["cases", "deaths", "foo"])
 
 def test_geo_values():
     assert np.isin(["US"], covid_data(geo_values = "US").location.unique()).all()
     assert np.isin(["US", "42"], covid_data(geo_values = np.array(["US", "42"])).location.unique()).all()
     assert np.isin(["US", "42", "42095"], covid_data(geo_values = ["US", "42", "42095"]).location.unique()).all()
+    with pytest.raises(ValueError):
+        covid_data(geo_values = 1.2)
+
+def test_preds():
+    assert np.isin(covid_data(preds = True).columns.to_list(), ["location", "location_name", "date", "end_date", "EW", "cases", "deaths", "hosps", "preds_cases", "residuals_cases", "preds_deaths", "residuals_deaths", "preds_hosps", "residuals_hosps"]).all()
+    assert not np.isin(covid_data(preds = False).columns.to_list(), ["preds_cases", "residuals_cases", "preds_deaths", "residuals_deaths", "preds_hosps", "residuals_hosps"]).all()
