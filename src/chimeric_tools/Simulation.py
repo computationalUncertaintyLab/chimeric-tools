@@ -12,7 +12,15 @@ import numpy as np
 import pandas as pd
 from chimeric_tools.Data import covid_data
 from arch.bootstrap import CircularBlockBootstrap
+from arch.bootstrap import optimal_block_length as arch_optimal_block_length
 
+
+def optimal_block_length(x: Union[np.ndarray, pd.Series, pd.DataFrame]):
+    """
+    This is a wrapper function for `arch.boostrap.optimal_block_length <https://arch.readthedocs.io/en/latest/bootstrap/generated/arch.bootstrap.optimal_block_length.html#id1>`_
+    It returns the optimal block length for the given data.
+    """
+    return arch_optimal_block_length(x)["circular"]
 
 class COVID(object):
     """
@@ -62,7 +70,7 @@ class COVID(object):
             self.geo_values = geo_values
             self.p = None
         elif isinstance(geo_values, dict):
-            if sum(geo_values.values()) != 1:
+            if not abs(1 - sum(geo_values.values())) <= 0.001:
                 raise ValueError("geo_values must sum to 1")
             self.geo_values = np.array(list(geo_values.keys()))
             self.p = np.array(list(geo_values.values()))
@@ -103,14 +111,14 @@ class COVID(object):
                 "RandomState instance or an integer when used."
             )
 
-    def pick_geo_values(self, reps):
+    def pick_geo_values(self, reps: int) -> np.ndarray:
         """
         Randomly generate geo values with probability p and repeat for reps times
         """
         indices = self.generator.choice(a=len(self.geo_values), size=reps, p=self.p)
         return np.array([self.geo_values[x] for x in indices])
 
-    def simulate(self, reps):
+    def simulate(self, block_length: int, reps: int):
         """
         Simulate reps number of simulations using random geo values and bootstrapped time series
         """
@@ -127,7 +135,7 @@ class COVID(object):
                 kwargs[i] = sub_data[res]
 
             # --bootstrap the data    
-            bs = CircularBlockBootstrap(5, **kwargs)
+            bs = CircularBlockBootstrap(block_length, **kwargs)
             for data in bs.bootstrap(1):
                 sim_data = data[1]
 

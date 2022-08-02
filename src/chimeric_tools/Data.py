@@ -342,4 +342,4 @@ def covid_data(
         (data["date"] >= start_date)
         & (data["date"] <= end_date)
     ) & (data["location"].isin(geo_values))
-    return data.loc[mask]
+    return data.loc[mask].reset_index(drop=True)

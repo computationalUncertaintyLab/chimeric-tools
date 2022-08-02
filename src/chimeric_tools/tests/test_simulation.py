@@ -28,7 +28,7 @@ def test_generator():
 def test_simulation():
     bs = COVID()
     length = len(bs.data.loc[bs.data["location"] == "US"])
-    for data in bs.simulate(1):
+    for data in bs.simulate(5,1):
         cases = data[0]["cases"]
         deaths = data[0]["deaths"]
         hosps = data[0]["hosps"]

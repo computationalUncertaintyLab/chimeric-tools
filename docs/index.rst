@@ -42,7 +42,8 @@ You can alternatively install the latest version from GitHub
 
    background
    installation
-   examples/data_examples.ipynb
+   Data<data/data.rst>
+   Simulation <simulation/simulation.rst>
    chimeric_tools
 
 .. toctree::
