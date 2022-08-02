@@ -42,8 +42,8 @@ You can alternatively install the latest version from GitHub
 
    background
    installation
-   usage
-   api
+   examples/data_examples.ipynb
+   chimeric_tools
 
 .. toctree::
    :caption: Development

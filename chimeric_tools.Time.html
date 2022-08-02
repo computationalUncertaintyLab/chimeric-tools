@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; chimeric_tools 0.0.1 documentation</title>
+  <title>chimeric_tools.Time &mdash; chimeric_tools 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,9 +19,7 @@
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data Examples" href="examples/data_examples.html" />
-    <link rel="prev" title="Background" href="background.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,12 +38,9 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="background.html">Background</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#pip">pip</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/data_examples.html">Data Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="chimeric_tools.html">chimeric_tools API</a></li>
 </ul>
@@ -71,9 +66,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Installation</li>
+      <li>chimeric_tools.Time</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/chimeric_tools.Time.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -105,29 +100,85 @@
     text-align: unset;
 }
 </style>
-<section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
-<p>For right now we suggest installing from GitHub because of the rapid development of this project</p>
-<section id="pip">
-<h2>pip<a class="headerlink" href="#pip" title="Permalink to this heading"></a></h2>
-<p>Releases are available PyPI and can be installed with pip</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install chimeric-tools
-</pre></div>
-</div>
-<p>You can alternatively install the latest version from GitHub</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install pip install git+https://github.com/computationalUncertaintyLab/chimeric-tools.git
-</pre></div>
-</div>
-</section>
+<section id="module-chimeric_tools.Time">
+<span id="chimeric-tools-time"></span><h1>chimeric_tools.Time<a class="headerlink" href="#module-chimeric_tools.Time" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Time.fromDate2Epiweek">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Time.</span></span><span class="sig-name descname"><span class="pre">fromDate2Epiweek</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">DateString</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Time.fromDate2Epiweek" title="Permalink to this definition"></a></dt>
+<dd><p>Return the epidemic week that corresponds to a date in YYYY-mm-dd format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param</dt>
+<dd class="field-odd"><p>a string in the format YYYY-mm-dd</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the epiweek</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>INT</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Time.fromDates2Epiweeks">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Time.</span></span><span class="sig-name descname"><span class="pre">fromDates2Epiweeks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datelist</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Time.fromDates2Epiweeks" title="Permalink to this definition"></a></dt>
+<dd><p>Return the epidemic weeks that corresponds to a list of dates in YYYY-mm-dd format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param</dt>
+<dd class="field-odd"><p>a list of strings in the format YYYY-mm-dd</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of epiweeks</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>LIST</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Time.getClosestDay">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Time.</span></span><span class="sig-name descname"><span class="pre">getClosestDay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numericDay</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Time.getClosestDay" title="Permalink to this definition"></a></dt>
+<dd><p>The user enters a value corresponding to the days of the week: Sunday (0)-Saturday(6)
+and this function returns the closest date YYYY-mm-dd with this day of the week.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param</dt>
+<dd class="field-odd"><p>numericDay(0-6)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>YYYY-mm-dd</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p># Return the YYYY-MM-DD of the closest Wednesday
+getClosestDay(3)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Time.todayEpiWeek">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Time.</span></span><span class="sig-name descname"><span class="pre">todayEpiWeek</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Time.todayEpiWeek" title="Permalink to this definition"></a></dt>
+<dd><p>Return the epidemic week that corresponds to today date in YYYY-mm-dd format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the epiweek</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>INT</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="background.html" class="btn btn-neutral float-left" title="Background" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples/data_examples.html" class="btn btn-neutral float-right" title="Data Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

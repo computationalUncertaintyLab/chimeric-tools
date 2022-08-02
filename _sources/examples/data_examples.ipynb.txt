@@ -1,0 +1,148 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Data Examples\n",
+    "\n",
+    "First we have to some setup"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import chimeric_tools.Data as ctd\n",
+    "%matplotlib inline\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "plt.rc(\"figure\", figsize=(16, 6))\n",
+    "plt.rc(\"savefig\", dpi=90)\n",
+    "plt.rc(\"font\", family=\"sans-serif\")\n",
+    "plt.rc(\"font\", size=14)\n",
+    "\n",
+    "import warnings\n",
+    "warnings.filterwarnings('ignore')\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Loading Raw Data\n",
+    "\n",
+    "#### Daily Data\n",
+    "\n",
+    "If you want to load the raw data with no constraints on date or location you can easily do this by simply using the load functions.\n",
+    "\n",
+    "Here we are going to **load daily cases** and plot the US cases."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "daily_cases = ctd.load_cases_truths()\n",
+    "daily_cases = daily_cases.loc[daily_cases.location == \"US\"]\n",
+    "sns.lineplot(x=\"date\", y=\"value\", data=daily_cases)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Turning Daily Cases into Weekly Cases\n",
+    "\n",
+    "If you want to turn these daily cases into weekly cases then you can use the `daily_to_weekly` This function (for now) requires specific columns for it to work: `[ date: date or str, location: str, location_name, str,  value: int or float]`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "weekly_cases = ctd.daily_to_weekly(daily_cases)\n",
+    "sns.lineplot(x=\"date\", y=\"value\", data=weekly_cases)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Getting Processed Covid Data\n",
+    "\n",
+    "The function `covid_data()` is the bread and butter to getting COVID data with custom FIPS, date ranges, and types.\n",
+    "\n",
+    "If you want everything that the dataset has to offer, all the dates, all the FIPS, predictions, and residuals then you can simply run `covid_data()`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ctd.covid_data().head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "If I want to get just case data for the US and PA in 2021 and plot each, I can easily do this with `geo_values`, `start_date`, and `end_date`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "locations = [\"US\", \"42\"]\n",
+    "data = ctd.covid_data(start_date=\"2021-01-01\", end_date=\"2021-12-31\", geo_values=locations, include=[\"cases\"], preds=False)\n",
+    "\n",
+    "\n",
+    "fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True, sharey=False)\n",
+    "ax = 0\n",
+    "for locs in locations:\n",
+    "    sub_data = data.loc[data.location == locs]\n",
+    "    sns.lineplot(x=\"date\", y=\"cases\", data=sub_data, ax=axes[ax])\n",
+    "    ax += 1\n",
+    "    "
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.9.12 ('science')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "f481d707f485e5e545fcbec8e23552587d82164162b1e7024dc6dabd3ca7d616"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
