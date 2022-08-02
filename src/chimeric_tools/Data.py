@@ -4,14 +4,12 @@ Classes to keep data up to date
 """
 import os
 from typing import Optional, Union, Iterable
-from datetime import date, timedelta, datetime
-import io
+from datetime import date, datetime
 import warnings
 import pandas as pd
 import numpy as np
 import requests
 import pkg_resources
-import covidcast
 from epiweeks import Week
 
 def check_for_data(filename: str) -> bool:

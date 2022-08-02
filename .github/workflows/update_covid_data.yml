@@ -41,6 +41,7 @@ jobs:
     
     - name: Install requirements
       run: pip install -r requirements.txt
+           pip install -r requirements.txt
            pip install -e .
 
     - name: Get data truths

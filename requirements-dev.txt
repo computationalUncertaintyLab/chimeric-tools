@@ -1,0 +1,20 @@
+#Graphics
+matplotlib
+seaborn
+
+
+#Documentation
+ipython>=7
+sphinx>=5
+nbsphinx
+jupyter
+notebook
+nbconvert
+sphinx-autodoc-typehints
+pygments>=2.7.4
+sphinx_theme
+sphinx-rtd-theme
+
+# Testing
+pytest
+pytest-cov

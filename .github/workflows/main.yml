@@ -43,6 +43,7 @@ jobs:
           python -m pip install --upgrade pip
           sudo apt update
           pip install -r requirements.txt
+          pip install -r requirments-dev.txt
 
       - name: 🔧 Build HTML
         run: |

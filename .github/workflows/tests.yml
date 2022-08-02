@@ -13,6 +13,7 @@ jobs:
         python-version: '3.10'
     - name: Install requirements
       run: pip install -r requirements.txt
+           pip install -r requirements-dev.txt
            pip install -e .
     - name: Run tests and collect coverage
       run: pytest --cov
