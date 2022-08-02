@@ -34,7 +34,7 @@ def test_data():
     
 def test_date():
     assert min(covid_data(start_date="2019-01-01", end_date="2022-01-02")["date"]) == date(2020,1,19)
-    assert max(covid_data(start_date="2019-01-01", end_date="2023-01-02")["date"]) == datetime.strptime(max(load_cases_weekly()["date"]), "%Y-%m-%d").date()
+    assert max(covid_data(start_date="2019-01-01", end_date="2023-01-02")["date"]) == max(load_cases_weekly()["date"])
     assert min(covid_data(start_date="2022-01-01", end_date="2022-01-30")["date"]) == Week.fromdate(date(2022,1,1)).startdate()
     assert max(covid_data(start_date="2022-01-01", end_date="2022-01-30")["end_date"]) == Week.fromdate(date(2022,1,30)).enddate()
     assert min(covid_data(start_date=date(2022,1,1), end_date=date(2022,1,30))["date"]) == Week.fromdate(date(2022,1,1)).startdate()

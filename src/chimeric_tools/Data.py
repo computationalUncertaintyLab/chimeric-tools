@@ -27,7 +27,7 @@ def check_for_data(filename: str) -> bool:
 
 def load_cases_truths():
     """
-    Loads raw truth data from CSSE dataset
+    Loads raw case truths from CSSE dataset
 
     Returns
     ----------
@@ -40,12 +40,14 @@ def load_cases_truths():
     stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
+    data['date'] = pd.to_datetime(data['date'], format = '%Y-%m-%d')
+
     return data
 
 
 def load_deaths_truths():
     """
-    Loads raw truth data from CSSE dataset
+    Loads raw death truths from CSSE dataset
 
     Returns
     ----------
@@ -58,12 +60,14 @@ def load_deaths_truths():
     stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
+    data['date'] = pd.to_datetime(data['date'], format = '%Y-%m-%d')
+
     return data
 
 
 def load_hosps_truths():
     """
-    Loads raw truth data from CSSE dataset
+    Loads raw hosp truths from CSSE dataset
 
     Returns
     ----------
@@ -76,12 +80,14 @@ def load_hosps_truths():
     stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
+    data['date'] = pd.to_datetime(data['date'], format = '%Y-%m-%d')
+
     return data
 
 
 def load_cases_weekly():
     """
-    Load weekly data complete with model predictions and residuals
+    Load weekly cases complete with ARIMA(2,1,0) predictions and residuals
 
     Returns
     ----------
@@ -94,12 +100,14 @@ def load_cases_weekly():
     stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
+    data['date'] = pd.to_datetime(data['date'], format = '%Y-%m-%d')
+
     return data
 
 
 def load_deaths_weekly():
     """
-    Load weekly data complete with model predictions and residuals
+    Load weekly deaths complete with ARIMA(2,1,0) predictions and residuals
 
     Returns
     ----------
@@ -112,12 +120,14 @@ def load_deaths_weekly():
     stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
+    data['date'] = pd.to_datetime(data['date'], format = '%Y-%m-%d')
+
     return data
 
 
 def load_hosps_weekly():
     """
-    Load weekly data complete with model predictions and residuals
+    Load weekly hosps complete with ARIMA(2,1,0) predictions and residuals
 
     Returns
     ----------
@@ -130,6 +140,8 @@ def load_hosps_weekly():
     stream = pkg_resources.resource_stream(__name__, "data/" + filename)
     data = pd.read_csv(stream, compression="gzip")
     data["location"] = data["location"].astype(str)
+    data['date'] = pd.to_datetime(data['date'], format = '%Y-%m-%d')
+
     return data
 
 
@@ -141,7 +153,8 @@ def daily_to_weekly(data):
     Parameters
     ----------
 
-        data: dataframe [ date: date or str, location: str, location_name, str,  value: int or float]
+        data: pd.DataFrame 
+            The columns must of of name `[ date: date or str, location: str, location_name, str,  value: int or float]`
 
     Returns
     ----------
@@ -213,17 +226,23 @@ def covid_data(
     Parameters
     ----------
         start_date: date or str
-            start date of data to be returned
+            The first day to include in the data set. If the date is before the first day in the raw 
+            dataset then `start_date` will be set the first day available. Since this function returns weekly data, if you input a start date
+            in the middel of the week it will be rounded to the nearest week.
         end_date: date or str
-            end date of data to be returned
+            The last day to include in the data set. If the date is after the last day in the raw 
+            dataset then `end_date` will be set the last day available. Since this function returns weekly data, if you input a end date
+            in the middel of the week it will be rounded to the nearest week.
         geo_values: np.ndarray or list or str
-            list of locations to be returned
+            list of locations to be returned in the dataset. If None, all locations are returned. All states must be in number FIPS terms ex. (PA would be "42").
+            All counties bust be be in their statndard FIP format of state number and county number ex. (Northhampton County would be"42095").
         include: list
-            list of data to be returned
+            list of data you want to include in the dataset. If None, all data is included. You can include cases, deaths, and hospitalizations.
         
     Returns
     ----------
-        dataframe
+        pd.DataFrame
+            Dataframe of Covid data
 
     Examples
     ----------

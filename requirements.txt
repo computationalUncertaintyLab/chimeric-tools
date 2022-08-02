@@ -15,6 +15,7 @@ sphinxcontrib-bibtex
 sphinx_theme
 sphinx-rtd-theme
 sphinx-mdinclude
+nbsphinx
 epiweeks
 delphi_epidata
 statsmodels
