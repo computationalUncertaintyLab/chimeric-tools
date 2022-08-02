@@ -14,6 +14,9 @@ jobs:
         with:
           fetch-depth: 0  # fetch all history so that last modified date-times are accurate
 
+      - name: Install pandoc
+        uses: r-lib/actions/setup-pandoc@v1
+
       - name: 🐍 Set up Python 3.10
         uses: actions/setup-python@v2
         with:
@@ -29,14 +32,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
-
-      # - name: 👷‍ Install Dot and pandoc
-      #   run: |
-      #     conda install -c conda-forge pandoc
-      #     conda install -c conda-forge ipython
-      #     pip install sphinxcontrib-websupport
-      #     sudo apt update
-      #     sudo apt install -y graphviz
 
       - name: 👷‍ Install dependencies
         run: |
