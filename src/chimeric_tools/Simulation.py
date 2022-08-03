@@ -19,6 +19,16 @@ def optimal_block_length(x: Union[np.ndarray, pd.Series, pd.DataFrame]):
     """
     This is a wrapper function for `arch.boostrap.optimal_block_length <https://arch.readthedocs.io/en/latest/bootstrap/generated/arch.bootstrap.optimal_block_length.html#id1>`_
     It returns the optimal block length for the given data.
+
+    Parameters
+    ----------
+    x : Union[np.ndarray, pd.Series, pd.DataFrame]
+        The data to be used for the optimal block length.
+    
+    Returns
+    ----------
+
+    pd.Series
     """
     return arch_optimal_block_length(x ** 2)["circular"]
 
@@ -34,23 +44,11 @@ class COVID(object):
         The end date of the simulation. Defaults to None.
     geo_values : Union[np.ndarray, Dict[str, float], str, list, None], optional
         The geo values to use. Defaults to None.
-    custom_data : Optional[pd.DataFrame], optional
-        The custom data to use. Defaults to None.
+    include : Union[list, None], optional
+        The list of parameters to include. Defaults to to ["cases", "deaths", "hosps"].
     seed : Union[None, int, Generator], optional
         The seed to use. Defaults to None.
 
-    Examples
-    --------
-
-    >>> from chimeric_tools.Simulation import COVID
-    >>> import matplotlib.pyplot as plt
-    >>> bs = COVID(start_date = "2021-01-01", end_date = "2021-12-31", geo_values = "US", include = ["cases"])
-    >>> for data in bs.simulate(100):
-    >>>     plt.plot(data[0]["cases"], color= "tab:blue", alpha = 0.1)
-    >>> plt.xlabel("Weeks")
-    >>> plt.ylabel("Cases")
-    >>> plt.title("Covid Simulation of FIP: " + data[1])
-    >>> plt.show()
     """
 
     def __init__(
@@ -114,6 +112,16 @@ class COVID(object):
     def pick_geo_values(self, reps: int) -> np.ndarray:
         """
         Randomly generate geo values with probability p and repeat for reps times
+
+        Parameters
+        ----------
+        reps : int
+            The number of times to repeat the random generation.
+        
+        Returns
+        ----------
+        np.ndarray
+            The randomly generated geo values.
         """
         indices = self.generator.choice(a=len(self.geo_values), size=reps, p=self.p)
         return np.array([self.geo_values[x] for x in indices])
@@ -121,7 +129,25 @@ class COVID(object):
 
     def simulate(self, block_length: Union[list, np.ndarray, int, str], reps: int):
         """
-        Simulate reps number of simulations using random geo values and bootstrapped time series
+        Simulate data `reps` times. Simulations are made by (1) using a simple model to get in-sample predictions and their respective residuals.
+        (2) Using a block bootstrap with block length of `block_length` to bootstrap the residuals. (3) Adding the new residuals back to the in-sample prediction data.
+        
+        Parameters
+        ----------
+        block_length : Union[list, np.ndarray, int, str]
+            The block length of the block bootstrap. 
+            If block_length is an integer, this is the block length that will be used for every parameter.
+            If block_length is a list, the each value is the block length for each parameter, thusit must be the same length as the number of parameters.
+            If block_length is `"auto"`, then the optimal block length will be used for each parameter.
+        reps : int
+            The number of times to repeat the simulation.
+
+        Returns
+        ----------
+        pd.DataFrame
+            The simulated data in the form of a dataframe. The dataframe will contain the predictions and residuals used for each parameter along witht he 
+            simulated data. The column `sim` distinguishes what number simulation it is.
+            
         """
 
         # check block_length args
