@@ -145,7 +145,7 @@ class COVID(object):
         bs_data = pd.DataFrame()
 
         for geo_value in geo_for_sample:
-            sub_data = self.data[self.data["location"] == geo_value].reset_index()
+            sub_data = self.data[self.data["location"] == geo_value].reset_index(drop=True)
 
             # auto block length
             if auto:
