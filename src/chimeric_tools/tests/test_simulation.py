@@ -1,3 +1,4 @@
+from numpy import block
 import pytest
 from chimeric_tools.Simulation import *
 
@@ -26,15 +27,8 @@ def test_generator():
         COVID(seed = "1")
 
 def test_simulation():
-    bs = COVID()
-    length = len(bs.data.loc[bs.data["location"] == "US"])
-    for data in bs.simulate(5,1):
-        cases = data[0]["cases"]
-        deaths = data[0]["deaths"]
-        hosps = data[0]["hosps"]
-        assert isinstance(cases, pd.Series)
-        assert isinstance(deaths, pd.Series)
-        assert isinstance(hosps, pd.Series)
-        assert cases.shape == (length,)
-        assert deaths.shape == (length,)
-        assert hosps.shape == (length,)
+    assert isinstance(COVID(geo_values = "US").simulate(block_length = "auto", reps = 2), pd.DataFrame)
+    assert isinstance(COVID(geo_values = ["US", "42"], include = ["cases"]).simulate(block_length = [5], reps = 2), pd.DataFrame)
+    with pytest.raises(ValueError):
+        COVID(geo_values = "US", include = ["cases"]).simulate(block_length = [1,2], reps = 2)
+    assert isinstance(COVID(geo_values = "US").simulate(block_length = 5, reps = 2), pd.DataFrame)

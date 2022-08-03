@@ -20,7 +20,7 @@ def optimal_block_length(x: Union[np.ndarray, pd.Series, pd.DataFrame]):
     This is a wrapper function for `arch.boostrap.optimal_block_length <https://arch.readthedocs.io/en/latest/bootstrap/generated/arch.bootstrap.optimal_block_length.html#id1>`_
     It returns the optimal block length for the given data.
     """
-    return arch_optimal_block_length(x)["circular"]
+    return arch_optimal_block_length(x ** 2)["circular"]
 
 class COVID(object):
     """
@@ -118,28 +118,58 @@ class COVID(object):
         indices = self.generator.choice(a=len(self.geo_values), size=reps, p=self.p)
         return np.array([self.geo_values[x] for x in indices])
 
-    def simulate(self, block_length: int, reps: int):
+
+    def simulate(self, block_length: Union[list, np.ndarray, int, str], reps: int):
         """
         Simulate reps number of simulations using random geo values and bootstrapped time series
         """
+
+        # check block_length args
+        auto = False
+        if isinstance(block_length, (list, np.integer)):
+            if not len(block_length) == len(self.include):
+                raise ValueError("block_length must be a list of length the same as include")
+        elif isinstance(block_length, int):
+            block_length = [block_length] * len(self.include)
+        elif isinstance(block_length, str) and block_length == "auto":
+            auto = True
+        else:
+            raise ValueError("block_length does not match the correct type")
+
         geo_for_sample = self.pick_geo_values(reps)
 
         # --for each geo value boostrap the residuals and add to data
+
+        sim_num = 0
+
+        bs_data = pd.DataFrame()
+
         for geo_value in geo_for_sample:
             sub_data = self.data[self.data["location"] == geo_value].reset_index()
 
-            # --assemble dictionary of bootstrapped data
-            kwargs = {}
-            for i in self.include:
-                res = "".join("residuals_" + i)
-                kwargs[i] = sub_data[res]
-
-            # --bootstrap the data    
-            bs = CircularBlockBootstrap(block_length, **kwargs)
-            for data in bs.bootstrap(1):
-                sim_data = data[1]
-
+            # auto block length
+            if auto:
+                mask = []
                 for i in self.include:
+                    mask.append("".join("residuals_" + i))
+                block_length = optimal_block_length(sub_data[mask])
+
+            # --make temp dataframe to hold bootstrapped data
+            bootstrapped_data = sub_data[["date", "end_date", "location", "location_name", "EW"]].copy()
+            bootstrapped_data["sim"] = sim_num
+
+
+            # --assemble dictionary of bootstrapped data
+            for idx, i in enumerate(self.include):
+                mask = "".join("residuals_" + i)
+
+                # --bootstrap the data
+                bs = CircularBlockBootstrap(int(block_length[idx]), sub_data[mask])
+                for data in bs.bootstrap(1):
+                    sim_data = data[0][0]
+
                     preds = "".join("preds_" + i)
-                    sim_data[i] = sim_data[i].reset_index(drop=True) + sub_data[preds]
-                yield (sim_data, geo_value)
+                    bootstrapped_data[i] = sim_data.reset_index(drop=True) + sub_data[preds]
+            sim_num += 1
+            bs_data = pd.concat([bs_data, bootstrapped_data])
+        return bs_data.reset_index(drop=True)
