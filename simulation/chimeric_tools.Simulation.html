@@ -122,33 +122,51 @@
 <li><p><strong>start_date</strong> (<em>date</em><em>, </em><em>optional</em>) – The start date of the simulation. Defaults to None.</p></li>
 <li><p><strong>end_date</strong> (<em>date</em><em>, </em><em>optional</em>) – The end date of the simulation. Defaults to None.</p></li>
 <li><p><strong>geo_values</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>, </em><em>str</em><em>, </em><em>list</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – The geo values to use. Defaults to None.</p></li>
-<li><p><strong>custom_data</strong> (<em>Optional</em><em>[</em><em>pd.DataFrame</em><em>]</em><em>, </em><em>optional</em>) – The custom data to use. Defaults to None.</p></li>
+<li><p><strong>include</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – The list of parameters to include. Defaults to to [“cases”, “deaths”, “hosps”].</p></li>
 <li><p><strong>seed</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>int</em><em>, </em><em>Generator</em><em>]</em><em>, </em><em>optional</em>) – The seed to use. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chimeric_tools.Simulation</span> <span class="kn">import</span> <span class="n">COVID</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bs</span> <span class="o">=</span> <span class="n">COVID</span><span class="p">(</span><span class="n">start_date</span> <span class="o">=</span> <span class="s2">&quot;2021-01-01&quot;</span><span class="p">,</span> <span class="n">end_date</span> <span class="o">=</span> <span class="s2">&quot;2021-12-31&quot;</span><span class="p">,</span> <span class="n">geo_values</span> <span class="o">=</span> <span class="s2">&quot;US&quot;</span><span class="p">,</span> <span class="n">include</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cases&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;cases&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span> <span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Weeks&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Cases&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Covid Simulation of FIP: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="chimeric_tools.Simulation.COVID.pick_geo_values">
 <span class="sig-name descname"><span class="pre">pick_geo_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#chimeric_tools.Simulation.COVID.pick_geo_values" title="Permalink to this definition"></a></dt>
 <dd><p>Randomly generate geo values with probability p and repeat for reps times</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reps</strong> (<em>int</em>) – The number of times to repeat the random generation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The randomly generated geo values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="chimeric_tools.Simulation.COVID.simulate">
 <span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Simulation.COVID.simulate" title="Permalink to this definition"></a></dt>
-<dd><p>Simulate reps number of simulations using random geo values and bootstrapped time series</p>
+<dd><p>Simulate data <cite>reps</cite> times. Simulations are made by (1) using a simple model to get in-sample predictions and their respective residuals.
+(2) Using a block bootstrap with block length of <cite>block_length</cite> to bootstrap the residuals. (3) Adding the new residuals back to the in-sample prediction data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block_length</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>np.ndarray</em><em>, </em><em>int</em><em>, </em><em>str</em><em>]</em>) – The block length of the block bootstrap.
+If block_length is an integer, this is the block length that will be used for every parameter.
+If block_length is a list, the each value is the block length for each parameter, thusit must be the same length as the number of parameters.
+If block_length is <cite>“auto”</cite>, then the optimal block length will be used for each parameter.</p></li>
+<li><p><strong>reps</strong> (<em>int</em>) – The number of times to repeat the simulation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The simulated data in the form of a dataframe. The dataframe will contain the predictions and residuals used for each parameter along witht he
+simulated data. The column <cite>sim</cite> distinguishes what number simulation it is.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -158,6 +176,14 @@
 <span class="sig-prename descclassname"><span class="pre">chimeric_tools.Simulation.</span></span><span class="sig-name descname"><span class="pre">optimal_block_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Series</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Simulation.optimal_block_length" title="Permalink to this definition"></a></dt>
 <dd><p>This is a wrapper function for <a class="reference external" href="https://arch.readthedocs.io/en/latest/bootstrap/generated/arch.bootstrap.optimal_block_length.html#id1">arch.boostrap.optimal_block_length</a>
 It returns the optimal block length for the given data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>pd.Series</em><em>, </em><em>pd.DataFrame</em><em>]</em>) – The data to be used for the optimal block length.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pd.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
