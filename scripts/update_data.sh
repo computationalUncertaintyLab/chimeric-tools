@@ -5,7 +5,7 @@ gzip -d ./src/chimeric_tools/data/truth-Incident\ Deaths.csv.gz
 gzip -d ./src/chimeric_tools/data/truth-Incident\ Hospitalizations.csv.gz
 
 echo "Downloading Files"
-Rscript download_truths.R
+Rscript scripts/download_truths.R
 
 echo "Zipping Files"
 gzip ./src/chimeric_tools/data/truth-Incident\ Cases.csv
