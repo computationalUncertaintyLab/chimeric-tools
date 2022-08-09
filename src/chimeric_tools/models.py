@@ -1,9 +1,38 @@
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
+from statsmodels.tsa.ar_model import AutoReg
 import stan
 import matplotlib.pyplot as plt
+from scipy.stats import norm
 from datetime import date, timedelta
+from typing import Union
+
+def train_simulated_data(data: pd.DataFrame, models: Union[list, str]):
+    """
+    Trains simulated data with all models
+    """
+    import chimeric_tools.models
+    df = pd.DataFrame(columns=["forecast_date", "target_end_date", "location", "sim", "model", "value"])
+    for sim in data["sim"].unique():
+        print("Sim Number: ", sim)
+        sub_data = data.loc[data["sim"] == sim]
+        for model_name in models:
+            print("\tModel Name: ", model_name)
+            class_ = getattr(chimeric_tools.models, model_name)
+            for i in range(15, len(sub_data)+1):
+                splice_data = sub_data[:i]
+                print("\t\tLen: ", len(splice_data))
+                model = class_(data = splice_data, param = "cases", N_tilde = 4, location = splice_data["location"].iloc[0], date = max(splice_data["date"]))
+                model.fit()
+                preds = model.predict()
+                preds["model"] = model_name
+                preds["sim"] = sim
+
+                df = pd.concat([df, preds])
+    return df.sort_values(by=["sim", "model", "target_end_date", "forecast_date", "quantile"])
+
+
+
 
 def model(data: pd.DataFrame):
     """
@@ -44,6 +73,24 @@ def format_quantiles(data: pd.DataFrame):
         
     return dataQuantiles
 
+def from_statsmodels_to_quntiles(preds, N_tilde: int,  location: str, date: date):
+    """
+    Converts the statsmodels predictions to quantiles
+    """
+    data_predictions = {"forecast_date":[], "target_end_date":[], "location":[], "quantile":[], "value":[]}
+    quantiles = np.array([0.010, 0.025, 0.050, 0.100, 0.150, 0.200, 0.250, 0.300, 0.350, 0.400, 0.450, 0.500
+                          ,0.550, 0.600, 0.650, 0.700, 0.750, 0.800, 0.850, 0.900, 0.950, 0.975, 0.990])
+    for quantile in quantiles:
+        q = norm.ppf(quantile)
+        values = preds.predicted_mean + q * preds.se_mean
+        data_predictions["forecast_date"].extend(N_tilde*[date])
+        data_predictions["target_end_date"].extend([date + timedelta(weeks=i) for i in range(1, N_tilde+1)])
+        data_predictions["location"].extend(N_tilde*[location])
+        data_predictions["quantile"].extend(N_tilde*[quantile])
+        data_predictions["value"].extend(values)
+    return pd.DataFrame(data_predictions)
+
+
 def plot_predictions(data: pd.DataFrame, preds: pd.DataFrame, to_plot: str):
     """
     Plots the predictions and residuals
@@ -62,6 +109,8 @@ def plot_predictions(data: pd.DataFrame, preds: pd.DataFrame, to_plot: str):
     plt.xlabel("Date")
     plt.ylabel(to_plot)
     plt.show()
+
+    
 class ARIMA():
     """
     Just a quick and dirty test model
@@ -96,7 +145,6 @@ class AR1():
         self.date = date
         self.N = len(self.data)
         self.N_tilde = N_tilde
-        self.fit = self.fit()
 
     def fit(self):
         stan_code = """
@@ -131,7 +179,7 @@ class AR1():
                 "N_tilde": self.N_tilde,
                 }
         model = stan.build(program_code=stan_code, data=data)
-        return model.sample(num_chains = 4, num_samples= 1000)
+        self.fit = model.sample(num_chains = 1, num_samples= 1*10**3)
 
 
     def predict(self):
@@ -141,63 +189,48 @@ class AR1():
         return predictions
 
 
-class AR2():
+class AR3():
     """
-    LinReg model with Stan
+    Stats Model AR(6)
     """
-
-    def __init__(self, data: np.ndarray, N_tilde: int, location: str, date: date):
-        self.model_name = "StanLinReg"
-        self.data = data
+    
+    def __init__(self, data: np.ndarray, param: str, N_tilde: int, location: str, date: date):
+        self.model_name = "StatsModelAR6"
+        data.set_index("date", inplace=True)
+        self.data = data[param]
         self.location = location
         self.date = date
-        self.N = len(self.data)
+        self.N = len(data)
         self.N_tilde = N_tilde
-        self.fit = self.fit()
 
     def fit(self):
-        stan_code = """
-            data {
-                int<lower=0> N;
-                vector[N] y;
-                int<lower=0> N_tilde;
-            }
-            parameters {
-                real alpha;
-                real beta;
-                real gamma;
-                real<lower=0> sigma;
-            }
-            model {
-                alpha ~ normal(0, 10);
-                beta ~ normal(0, 10);
-                gamma ~ normal(0, 10);
-                sigma ~ cauchy(0, 2.5);
-                for (n in 3:N)
-                    y[n] ~ normal(alpha + beta*y[n-1] + gamma*y[n-2], sigma);
-            }
-            generated quantities {
-                vector[N_tilde] y_tilde;
-                vector[2] i = y[N-1:N];
-                for (n in 1:N_tilde) {
-                    y_tilde[n] = normal_rng(alpha + beta * i[2] + gamma * i[1], sigma);
-                    i[1] = i[2];
-                    i[2] = y_tilde[n];
-                    }
-            }
-        """
-        
-        data = {"N": self.N, 
-                "y": self.data,
-                "N_tilde": self.N_tilde,
-                }
-        model = stan.build(program_code=stan_code, data=data)
-        return model.sample(num_chains = 4, num_samples= 1000)
-
+        model = AutoReg(self.data, lags=3)
+        self.fit = model.fit()
 
     def predict(self):
-        predictions = self.fit["y_tilde"] # this is coming from the model object
-        predictions = format_sample(predictions, self.date, self.location)
-        predictions = format_quantiles(predictions)
+        predictions = self.fit.get_prediction(start=self.N, end=self.N + self.N_tilde - 1)
+        predictions = from_statsmodels_to_quntiles(predictions, self.N_tilde, self.location, self.date)
         return predictions
 
+class AR6():
+    """
+    Stats Model AR(6)
+    """
+    
+    def __init__(self, data: np.ndarray, param: str, N_tilde: int, location: str, date: date):
+        self.model_name = "StatsModelAR6"
+        data.set_index("date", inplace=True)
+        self.data = data[param]
+        self.location = location
+        self.date = date
+        self.N = len(data)
+        self.N_tilde = N_tilde
+
+    def fit(self):
+        model = AutoReg(self.data, lags=6)
+        self.fit = model.fit()
+
+    def predict(self):
+        predictions = self.fit.get_prediction(start=self.N, end=self.N + self.N_tilde - 1)
+        predictions = from_statsmodels_to_quntiles(predictions, self.N_tilde, self.location, self.date)
+        return predictions
