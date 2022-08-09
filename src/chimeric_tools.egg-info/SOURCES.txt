@@ -6,11 +6,12 @@ src/chimeric_tools/Constant.py
 src/chimeric_tools/Data.py
 src/chimeric_tools/Metaculus.py
 src/chimeric_tools/Prepocess.py
+src/chimeric_tools/Simulation.py
 src/chimeric_tools/Spatial.py
 src/chimeric_tools/Time.py
 src/chimeric_tools/__init__.py
-src/chimeric_tools/example.py
-src/chimeric_tools/test.py
+src/chimeric_tools/models.py
+src/chimeric_tools/typing.py
 src/chimeric_tools.egg-info/PKG-INFO
 src/chimeric_tools.egg-info/SOURCES.txt
 src/chimeric_tools.egg-info/dependency_links.txt
