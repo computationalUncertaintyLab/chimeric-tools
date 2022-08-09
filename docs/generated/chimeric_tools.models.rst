@@ -13,7 +13,12 @@
 
    .. autosummary::
    
+      format_quantiles
+      format_sample
+      from_statsmodels_to_quntiles
       model
+      plot_single_predictions
+      train_simulated_data
    
    
 
@@ -23,6 +28,9 @@
 
    .. autosummary::
    
+      AR1
+      AR3
+      AR6
       ARIMA
    
    
