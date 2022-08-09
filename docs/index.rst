@@ -44,6 +44,7 @@ You can alternatively install the latest version from GitHub
    installation
    Data<data/data.rst>
    Simulation <simulation/simulation.rst>
+   Models <models/models.rst>
    chimeric_tools
 
 .. toctree::
