@@ -1,11 +1,16 @@
-import numpy as np
-import pandas as pd
-from statsmodels.tsa.ar_model import AutoReg
-import stan
-import matplotlib.pyplot as plt
-from scipy.stats import norm
 from datetime import date, timedelta
 from typing import Union
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import stan
+from scipy.stats import norm
+from scipy import signal
+from skforecast.ForecasterAutoreg import ForecasterAutoreg
+from sklearn.linear_model import Ridge
+from statsmodels.tsa.ar_model import AutoReg
+import statsmodels.api as sm
 
 
 def train_simulated_data(data: pd.DataFrame, models: Union[list, str], include: str):
@@ -50,11 +55,11 @@ def train_simulated_data(data: pd.DataFrame, models: Union[list, str], include: 
         sub_data = data.loc[data["sim"] == sim]
         for model_name in models:
             class_ = getattr(chimeric_tools.models, model_name)
-            for i in range(15, len(sub_data) + 1):
+            for i in range(30, len(sub_data) + 1):
                 splice_data = sub_data[:i]
                 model = class_(
                     data=splice_data,
-                    param=include,
+                    target=include,
                     N_tilde=4,
                     location=splice_data["location"].iloc[0],
                     date=max(splice_data["date"]),
@@ -186,7 +191,7 @@ def format_quantiles(data: pd.DataFrame):
     return dataQuantiles
 
 
-def from_statsmodels_to_quntiles(preds, N_tilde: int, location: str, date: date):
+def quntiles(preds, sigma, N_tilde: int, location: str, date: date):
     """
     Converts the statsmodels predictions to quantiles
 
@@ -247,7 +252,7 @@ def from_statsmodels_to_quntiles(preds, N_tilde: int, location: str, date: date)
     )
     for quantile in quantiles:
         q = norm.ppf(quantile)
-        values = preds.predicted_mean + q * preds.se_mean
+        values = preds + q * sigma
         data_predictions["forecast_date"].extend(N_tilde * [date])
         data_predictions["target_end_date"].extend(
             [date + timedelta(weeks=i) for i in range(1, N_tilde + 1)]
@@ -258,7 +263,7 @@ def from_statsmodels_to_quntiles(preds, N_tilde: int, location: str, date: date)
     return pd.DataFrame(data_predictions)
 
 
-def plot_single_predictions(data: pd.DataFrame, preds: pd.DataFrame, to_plot: str):
+def plot_single_predictions(data: pd.DataFrame, preds: pd.DataFrame, target: str):
     """
     Plot the predictions and the 95% confidence interval for a single prediction.
     
@@ -282,14 +287,14 @@ def plot_single_predictions(data: pd.DataFrame, preds: pd.DataFrame, to_plot: st
     high = preds.loc[preds["quantile"] == 0.975, "value"]
 
     # plt.figure(figsize=(10, 6), dpi=150)
-    plt.plot(data["date"], data[to_plot], label="Truth Data")
+    plt.plot(data["date"], data[target], label="Truth Data")
     plt.plot(dates, mid, label="Predictions", color="black")
     plt.fill_between(
         dates, low, high, color="red", alpha=0.5, label="95% Confidence Interval"
     )
     plt.legend()
     plt.xlabel("Date")
-    plt.ylabel(to_plot)
+    plt.ylabel(target)
     plt.show()
 
 
@@ -377,11 +382,11 @@ class AR3:
     """
 
     def __init__(
-        self, data: np.ndarray, param: str, N_tilde: int, location: str, date: date
+        self, data: np.ndarray, target: str, N_tilde: int, location: str, date: date
     ):
         self.model_name = "StatsModelAR6"
         data.set_index("date", inplace=True)
-        self.data = data[param]
+        self.data = data[target]
         self.location = location
         self.date = date
         self.N = len(data)
@@ -395,8 +400,8 @@ class AR3:
         predictions = self.fit.get_prediction(
             start=self.N, end=self.N + self.N_tilde - 1
         )
-        predictions = from_statsmodels_to_quntiles(
-            predictions, self.N_tilde, self.location, self.date
+        predictions = quntiles(
+            predictions.predicted_mean, predictions.se_mean, self.N_tilde, self.location, self.date
         )
         return predictions
 
@@ -407,11 +412,11 @@ class AR6:
     """
 
     def __init__(
-        self, data: np.ndarray, param: str, N_tilde: int, location: str, date: date
+        self, data: np.ndarray, target: str, N_tilde: int, location: str, date: date
     ):
         self.model_name = "StatsModelAR6"
         data.set_index("date", inplace=True)
-        self.data = data[param]
+        self.data = data[target]
         self.location = location
         self.date = date
         self.N = len(data)
@@ -425,7 +430,53 @@ class AR6:
         predictions = self.fit.get_prediction(
             start=self.N, end=self.N + self.N_tilde - 1
         )
-        predictions = from_statsmodels_to_quntiles(
-            predictions, self.N_tilde, self.location, self.date
+        predictions = quntiles(
+            predictions.predicted_mean, predictions.se_mean, self.N_tilde, self.location, self.date
         )
         return predictions
+
+
+class ridge:
+    def __init__(self, data: np.ndarray, N_tilde: int, location: str, target: Union[str, list], date: date):
+        self.model_name = "RidgeRegression"
+        # data.set_index("date", inplace=True)
+        self.data = data[target]
+        self.N = self.data.shape[0]
+        index = int(self.N * 0.90)
+        self.training_data = self.data[:index]
+        self.val_data = self.data[index:]
+        self.location = location
+        self.date = date
+        self.N_tilde = N_tilde
+        self.target = target
+
+    def fit(self):
+        forecaster = ForecasterAutoreg(
+                    # regressor = RandomForestRegressor(random_state=0),
+                    regressor = Ridge(),
+                    lags      = 15
+                )
+        forecaster.fit(y=self.data)
+
+        self.fit = forecaster
+
+    def sigma2(self):
+        resid = self.fit.in_sample_residuals
+        sumofsq = np.sum(resid**2)
+        return 1.0 / self.N * sumofsq
+
+    def predict(self):
+        y_pred = self.fit.predict(self.N_tilde)
+        ar_params = np.array([1])
+        ar_params = np.append(ar_params, self.fit.get_coef()["coef"].to_numpy().T * -1)
+        print(ar_params)
+        ma = ar2ma(ar_params, np.ones(1), lags = 15)
+        print(ma)
+        se_mean = np.sqrt(self.sigma2() * np.cumsum(ma ** 2))[:self.N_tilde]
+        return quntiles(y_pred, se_mean, self.N_tilde, self.location, self.date)
+
+
+def ar2ma(ar, ma, lags = 100):
+    impulse = np.zeros(lags)
+    impulse[0] = 1.0
+    return signal.lfilter(ma, ar, impulse)
