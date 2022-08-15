@@ -135,10 +135,10 @@ class COVID(object):
         Parameters
         ----------
         block_length : Union[list, np.ndarray, int, str]
-            The block length of the block bootstrap. 
-            If block_length is an integer, this is the block length that will be used for every parameter.
-            If block_length is a list, the each value is the block length for each parameter, thusit must be the same length as the number of parameters.
-            If block_length is `"auto"`, then the optimal block length will be used for each parameter.
+            The block length of the block bootstrap./ 
+            If block_length is an integer, this is the block length that will be used for every parameter./
+            If block_length is a list, the each value is the block length for each parameter, thusit must be the same length as the number of parameters./
+            If block_length is `"auto"`, then the optimal block length will be used for each parameter./
         reps : int
             The number of times to repeat the simulation.
 
@@ -193,7 +193,7 @@ class COVID(object):
                 bs = CircularBlockBootstrap(int(block_length[idx]), sub_data[mask])
                 for data in bs.bootstrap(1):
                     sim_data = data[0][0]
-
+                    #TODO: add a column that indicated the target
                     preds = "".join("preds_" + i)
                     bootstrapped_data[i] = sim_data.reset_index(drop=True) + sub_data[preds]
             sim_num += 1

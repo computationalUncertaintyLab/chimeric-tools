@@ -10,10 +10,16 @@ from scipy import signal
 from skforecast.ForecasterAutoreg import ForecasterAutoreg
 from sklearn.linear_model import Ridge
 from statsmodels.tsa.ar_model import AutoReg
+from prophet import Prophet
 import statsmodels.api as sm
+import itertools
+
+from prophet.diagnostics import cross_validation
+from prophet.diagnostics import performance_metrics
 
 
-def train_simulated_data(data: pd.DataFrame, models: Union[list, str], include: str):
+
+def train_simulated_data(data: pd.DataFrame, models: Union[list, str], target: str):
     """
     From simulated data from the chimeric_tools.Simulation.COVID.simulate() function, you can train our models and output a dataframe with the predictions for each simulation
     and at each time point.
@@ -24,7 +30,7 @@ def train_simulated_data(data: pd.DataFrame, models: Union[list, str], include: 
         This has to be a data frame that that has been returned from the chimeric_tools.Simulation.COVID.simulate() function.
     models: Union[list, str]
         This is a list of the models you want to use when forecasting the data. If left blank the default is to use all models in this file.
-    include: str
+    target: str
         The name of the paremeter you want to plot: cases, deaths, hosps.
     
     Returns
@@ -59,7 +65,7 @@ def train_simulated_data(data: pd.DataFrame, models: Union[list, str], include: 
                 splice_data = sub_data[:i]
                 model = class_(
                     data=splice_data,
-                    target=include,
+                    target=target,
                     N_tilde=4,
                     location=splice_data["location"].iloc[0],
                     date=max(splice_data["date"]),
@@ -74,19 +80,9 @@ def train_simulated_data(data: pd.DataFrame, models: Union[list, str], include: 
     )
 
 
-def model(data: pd.DataFrame):
-    """
-    Adds predictions and residuals to the data
-    """
-    for fip in data["location"].unique():
-        sub_data = data.loc[data["location"] == fip]
-        m = ARIMA(sub_data)
-        data.loc[data["location"] == fip, "preds"] = m.preds
-        data.loc[data["location"] == fip, "residuals"] = m.residuals
-    return data
 
 
-def format_sample(data: np.ndarray, start_date: date, location: str):
+def _format_sample(data: np.ndarray, start_date: date, location: str):
     """
     Formats the samples from a stan model into a useble dataframe all relevent information.
 
@@ -128,8 +124,7 @@ def format_sample(data: np.ndarray, start_date: date, location: str):
             data_predictions["value"].append(sample)
     return pd.DataFrame(data_predictions)
 
-
-def format_quantiles(data: pd.DataFrame):
+def _format_quantiles(data: pd.DataFrame):
     """
     Formats the samples form the stan model (precessed througth the format_sample function) into a percentiles.
 
@@ -193,12 +188,14 @@ def format_quantiles(data: pd.DataFrame):
 
 def quntiles(preds, sigma, N_tilde: int, location: str, date: date):
     """
-    Converts the statsmodels predictions to quantiles
+    Converts mean predictions and variance predictions into invervals. We assume a normal distribution.
 
     Parameters
     -----------
-    preds: PredictionResault
-        This is the prediction result from the statsmodels model.
+    preds: np.ndarray
+        This is the mean predictions.
+    sigma: np.ndarray
+        This is the variance predictions.
     N_tilde: int
         This is the number of weeks ahead to forecast.
     location: str
@@ -262,6 +259,40 @@ def quntiles(preds, sigma, N_tilde: int, location: str, date: date):
         data_predictions["value"].extend(values)
     return pd.DataFrame(data_predictions)
 
+
+def ar2ma(ar, ma, lags = 100):
+    """
+    Lowkey I have no idea what this does
+
+    Parameters
+    -----------
+    ar: np.ndarray
+        This is the autoregressive coefficients.
+    ma: np.ndarray
+        This is the moving average coefficients.
+    lags: int
+        This is the number of lags to use.
+    
+    Returns
+    --------
+    data: np.ndarray
+        No idea
+    """
+    impulse = np.zeros(lags)
+    impulse[0] = 1.0
+    return signal.lfilter(ma, ar, impulse)
+
+
+def model(data: pd.DataFrame):
+    """
+    Adds predictions and residuals to the data
+    """
+    for fip in data["location"].unique():
+        sub_data = data.loc[data["location"] == fip]
+        m = ARIMA(sub_data)
+        data.loc[data["location"] == fip, "preds"] = m.preds
+        data.loc[data["location"] == fip, "residuals"] = m.residuals
+    return data
 
 def plot_single_predictions(data: pd.DataFrame, preds: pd.DataFrame, target: str):
     """
@@ -371,8 +402,8 @@ class AR1:
 
     def predict(self):
         predictions = self.fit["y_tilde"]  # this is coming from the model object
-        predictions = format_sample(predictions, self.date, self.location)
-        predictions = format_quantiles(predictions)
+        predictions = _format_sample(predictions, self.date, self.location)
+        predictions = _format_quantiles(predictions)
         return predictions
 
 
@@ -442,9 +473,6 @@ class ridge:
         # data.set_index("date", inplace=True)
         self.data = data[target]
         self.N = self.data.shape[0]
-        index = int(self.N * 0.90)
-        self.training_data = self.data[:index]
-        self.val_data = self.data[index:]
         self.location = location
         self.date = date
         self.N_tilde = N_tilde
@@ -476,7 +504,62 @@ class ridge:
         return quntiles(y_pred, se_mean, self.N_tilde, self.location, self.date)
 
 
-def ar2ma(ar, ma, lags = 100):
-    impulse = np.zeros(lags)
-    impulse[0] = 1.0
-    return signal.lfilter(ma, ar, impulse)
+class prophet:
+    def __init__(self, data: pd.DataFrame , target: str, N_tilde: int, location: str, date: date):
+        self.model_name = "Prophet"
+        self.data = data.loc[:, (target, "date")]
+        self.data.rename({target: "y", "date": "ds"}, axis=1 ,inplace=True)
+        self.N = self.data.shape[0]
+        self.location = location
+        self.date = date
+        self.N_tilde = N_tilde
+        self.target = target
+        self.best_params = self.get_best_params()
+        
+    def get_best_params(self):
+        import itertools
+        import numpy as np
+        import pandas as pd
+        from prophet import Prophet
+    
+        from prophet.diagnostics import cross_validation
+        from prophet.diagnostics import performance_metrics
+
+        param_grid = {  
+            'changepoint_prior_scale': [0.001, 0.01, 0.1, 0.5],
+            'seasonality_prior_scale': [0.01, 0.1, 1.0, 10.0],
+            'holidays_prior_scale': [0.01, 0.1, 1.0, 10.0],
+                }
+        # three cutoffs six months apart
+        cutoffs = pd.to_datetime(['2020-08-15','2021-02-15', '2021-08-15', '2022-02-15'])
+        # Generate all combinations of parameters
+        all_params = [dict(zip(param_grid.keys(), v)) for v in itertools.product(*param_grid.values())]
+        rmses = []  # Store the RMSEs for each params here
+
+        # Use cross validation to evaluate all parameters
+        for params in all_params:
+            m = Prophet(**params)  # Fit model with given params
+            m.add_country_holidays(country_name='US')
+            m = m.fit(self.data)
+            df_cv = cross_validation(m, horizon='30 days', parallel="processes")
+            # rolling_window specifies the proportion of forecasts to use in each rolling window
+            df_p = performance_metrics(df_cv, rolling_window=1)
+            rmses.append(df_p['rmse'].values[0])
+        best_params = all_params[np.argmin(rmses)]
+        return best_params
+    
+    def fit(self):
+        self.model = Prophet(**self.best_params)
+        self.model.add_country_holidays(country_name='US')      
+        self.model.fit(self.data)
+
+    def predict(self):
+        future = self.model.make_future_dataframe(periods=self.N_tilde, freq='W')
+        predictions = self.model.predictive_samples(future)["yhat"][-self.N_tilde:]
+        predictions = _format_sample(predictions, self.date, self.location)
+        predictions = _format_quantiles(predictions)
+        return predictions
+
+
+
+
