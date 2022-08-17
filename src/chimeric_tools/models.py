@@ -507,6 +507,25 @@ class ridge:
 
 
 class prophet:
+    """
+    Use the package prophet from Facebook to predict the time series, see https://facebook.github.io/prophet/ for more details.
+    
+    Parameters
+    -----------
+    data: pd.DataFrame
+        The original dataframe of data from `get_data` function.
+    target: str
+        The target variable to be predicted such as "cases" or "deaths".
+    N_tilde: int
+        The number of days or weeks to be predicted.
+    location: str
+        The location to be predicted.
+    date: date
+        The date of the last data point.
+    Returns
+    --------
+    A model object.
+    """
     def __init__(self, data: pd.DataFrame , target: str, N_tilde: int, location: str, date: date):
         self.model_name = "Prophet"
         self.data = data.loc[:, (target, "date")]
@@ -564,6 +583,25 @@ class prophet:
 
 
 class xgboost:
+    """
+    Use the xgboostRegressor model from package xgboost to predict the time series, see https://xgboost.readthedocs.io/en/stable/index.html for more details.
+    
+    Parameters
+    -----------
+    data: pd.DataFrame
+        The original dataframe of data from `get_data` function.
+    target: str
+        The target variable to be predicted such as "cases" or "deaths".
+    N_tilde: int
+        The number of days or weeks to be predicted.
+    location: str
+        The location to be predicted.
+    date: date
+        The date of the last data point.
+    Returns
+    --------
+    A model object.
+    """
     def __init__(self, data: np.ndarray, N_tilde: int, location: str, target: Union[str, list], date: date):
         self.model_name = "XgboostRegression"
         # data.set_index("date", inplace=True)
@@ -599,6 +637,25 @@ class xgboost:
         return quntiles(y_pred, se_mean, self.N_tilde, self.location, self.date)
 
 class lightgbm:
+    """
+    Use the LGBMRegressor model from package lightgbm to predict the time series, see https://lightgbm.readthedocs.io/en/latest/Installation-Guide.html for more details.
+    
+    Parameters
+    -----------
+    data: pd.DataFrame
+        The original dataframe of data from `get_data` function.
+    target: str
+        The target variable to be predicted such as "cases" or "deaths".
+    N_tilde: int
+        The number of days or weeks to be predicted.
+    location: str
+        The location to be predicted.
+    date: date
+        The date of the last data point.
+    Returns
+    --------
+    A model object.
+    """
     def __init__(self, data: np.ndarray, N_tilde: int, location: str, target: Union[str, list], date: date):
         self.model_name = "LightgbmRegression"
         # data.set_index("date", inplace=True)
@@ -634,6 +691,25 @@ class lightgbm:
         return quntiles(y_pred, se_mean, self.N_tilde, self.location, self.date)
 
 class catboost:
+    """
+    Use the CatboostRegressor model from package catboost to predict the time series, see https://catboost.ai/en/docs/concepts/installation for more details.
+    
+    Parameters
+    -----------
+    data: pd.DataFrame
+        The original dataframe of data from `get_data` function.
+    target: str
+        The target variable to be predicted such as "cases" or "deaths".
+    N_tilde: int
+        The number of days or weeks to be predicted.
+    location: str
+        The location to be predicted.
+    date: date
+        The date of the last data point.
+    Returns
+    --------
+    A model object.
+    """
     def __init__(self, data: np.ndarray, N_tilde: int, location: str, target: Union[str, list], date: date):
         self.model_name = "CatboostRegression"
         # data.set_index("date", inplace=True)
