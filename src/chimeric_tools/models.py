@@ -13,7 +13,9 @@ from statsmodels.tsa.ar_model import AutoReg
 from prophet import Prophet
 import statsmodels.api as sm
 import itertools
-
+from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
+from catboost import CatBoostRegressor
 from prophet.diagnostics import cross_validation
 from prophet.diagnostics import performance_metrics
 
@@ -561,5 +563,107 @@ class prophet:
         return predictions
 
 
+class xgboost:
+    def __init__(self, data: np.ndarray, N_tilde: int, location: str, target: Union[str, list], date: date):
+        self.model_name = "XgboostRegression"
+        # data.set_index("date", inplace=True)
+        self.data = data[target]
+        self.N = self.data.shape[0]
+        self.location = location
+        self.date = date
+        self.N_tilde = N_tilde
+        self.target = target
 
+    def fit(self):
+        forecaster = ForecasterAutoreg(
+                        regressor = XGBRegressor(random_state=123,n_jobs=4),
+                        lags = 15
+                        )
+        forecaster.fit(y=self.data)
 
+        self.fit = forecaster
+
+    def sigma2(self):
+        resid = self.fit.in_sample_residuals
+        sumofsq = np.sum(resid**2)
+        return 1.0 / self.N * sumofsq
+
+    def predict(self):
+        y_pred = self.fit.predict(self.N_tilde)
+        ar_params = np.array([1])
+        ar_params = np.append(ar_params, self.fit.get_coef()["coef"].to_numpy().T * -1)
+        # print(ar_params)
+        ma = ar2ma(ar_params, np.ones(1), lags = 15)
+        # print(ma)
+        se_mean = np.sqrt(self.sigma2() * np.cumsum(ma ** 2))[:self.N_tilde]
+        return quntiles(y_pred, se_mean, self.N_tilde, self.location, self.date)
+
+class lightgbm:
+    def __init__(self, data: np.ndarray, N_tilde: int, location: str, target: Union[str, list], date: date):
+        self.model_name = "LightgbmRegression"
+        # data.set_index("date", inplace=True)
+        self.data = data[target]
+        self.N = self.data.shape[0]
+        self.location = location
+        self.date = date
+        self.N_tilde = N_tilde
+        self.target = target
+
+    def fit(self):
+        forecaster = ForecasterAutoreg(
+                        regressor = LGBMRegressor(random_state=123,n_jobs = 4),
+                        lags = 24
+                        )
+        forecaster.fit(y=self.data)
+
+        self.fit = forecaster
+
+    def sigma2(self):
+        resid = self.fit.in_sample_residuals
+        sumofsq = np.sum(resid**2)
+        return 1.0 / self.N * sumofsq
+
+    def predict(self):
+        y_pred = self.fit.predict(self.N_tilde)
+        ar_params = np.array([1])
+        ar_params = np.append(ar_params, self.fit.get_coef()["coef"].to_numpy().T * -1)
+        # print(ar_params)
+        ma = ar2ma(ar_params, np.ones(1), lags = 15)
+        # print(ma)
+        se_mean = np.sqrt(self.sigma2() * np.cumsum(ma ** 2))[:self.N_tilde]
+        return quntiles(y_pred, se_mean, self.N_tilde, self.location, self.date)
+
+class catboost:
+    def __init__(self, data: np.ndarray, N_tilde: int, location: str, target: Union[str, list], date: date):
+        self.model_name = "CatboostRegression"
+        # data.set_index("date", inplace=True)
+        self.data = data[target]
+        self.N = self.data.shape[0]
+        self.location = location
+        self.date = date
+        self.N_tilde = N_tilde
+        self.target = target
+
+    def fit(self):
+        forecaster = ForecasterAutoreg(
+                        regressor = CatBoostRegressor(random_state=123, silent=True , n_jobs = 4),
+                        lags = 15
+                        )
+        forecaster.fit(y=self.data)
+
+        self.fit = forecaster
+
+    def sigma2(self):
+        resid = self.fit.in_sample_residuals
+        sumofsq = np.sum(resid**2)
+        return 1.0 / self.N * sumofsq
+
+    def predict(self):
+        y_pred = self.fit.predict(self.N_tilde)
+        ar_params = np.array([1])
+        ar_params = np.append(ar_params, self.fit.get_coef()["coef"].to_numpy().T * -1)
+        # print(ar_params)
+        ma = ar2ma(ar_params, np.ones(1), lags = 15)
+        # print(ma)
+        se_mean = np.sqrt(self.sigma2() * np.cumsum(ma ** 2))[:self.N_tilde]
+        return quntiles(y_pred, se_mean, self.N_tilde, self.location, self.date)
