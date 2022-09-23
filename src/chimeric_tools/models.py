@@ -14,7 +14,7 @@ from prophet import Prophet
 import statsmodels.api as sm
 import itertools
 from xgboost import XGBRegressor
-from lightgbm import LGBMRegressor
+# from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from prophet.diagnostics import cross_validation
 from prophet.diagnostics import performance_metrics
@@ -614,11 +614,10 @@ class xgboost:
 
     def fit(self):
         forecaster = ForecasterAutoreg(
-                        regressor = XGBRegressor(random_state=123,n_jobs=4),
+                        regressor = XGBRegressor(random_state=123,n_jobs=4,objective='reg:squarederror', booster='gblinear'),
                         lags = 15
                         )
         forecaster.fit(y=self.data)
-
         self.fit = forecaster
 
     def sigma2(self):
@@ -627,9 +626,10 @@ class xgboost:
         return 1.0 / self.N * sumofsq
 
     def predict(self):
+        print(self.fit)
         y_pred = self.fit.predict(self.N_tilde)
         ar_params = np.array([1])
-        ar_params = np.append(ar_params, self.fit.get_coef()["coef"].to_numpy().T * -1)
+        ar_params = np.append(ar_params, self.fit.get_coef()["coef"].T * -1)
         # print(ar_params)
         ma = ar2ma(ar_params, np.ones(1), lags = 15)
         # print(ma)
