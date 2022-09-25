@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -46,7 +47,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../data/data.html">Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="simulation.html">Simulation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="simulation_examples.html">Examples</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Simulation.COVID"><code class="docutils literal notranslate"><span class="pre">COVID</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#chimeric_tools.Simulation.COVID.pick_geo_values"><code class="docutils literal notranslate"><span class="pre">COVID.pick_geo_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chimeric_tools.Simulation.COVID.simulate"><code class="docutils literal notranslate"><span class="pre">COVID.simulate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Simulation.optimal_block_length"><code class="docutils literal notranslate"><span class="pre">optimal_block_length()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../models/models.html">Models</a></li>
@@ -109,10 +118,10 @@
     text-align: unset;
 }
 </style>
-<section id="module-chimeric_tools.Simulation">
-<span id="chimeric-tools-simulation"></span><h1>chimeric_tools.Simulation<a class="headerlink" href="#module-chimeric_tools.Simulation" title="Permalink to this heading"></a></h1>
+<section id="chimeric-tools-simulation">
+<h1>chimeric_tools.Simulation<a class="headerlink" href="#chimeric-tools-simulation" title="Permalink to this heading"></a></h1>
 <p>Simulate COVID data</p>
-<dl class="py class">
+<span class="target" id="module-chimeric_tools.Simulation"></span><dl class="py class">
 <dt class="sig sig-object py" id="chimeric_tools.Simulation.COVID">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chimeric_tools.Simulation.</span></span><span class="sig-name descname"><span class="pre">COVID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">date</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">date</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geo_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Generator</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Simulation.COVID" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>

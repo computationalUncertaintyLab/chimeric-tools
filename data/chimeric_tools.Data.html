@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -45,7 +46,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="data.html">Data</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="data_examples.html">Examples</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.check_for_data"><code class="docutils literal notranslate"><span class="pre">check_for_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.covid_data"><code class="docutils literal notranslate"><span class="pre">covid_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.daily_to_weekly"><code class="docutils literal notranslate"><span class="pre">daily_to_weekly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.download_from_github"><code class="docutils literal notranslate"><span class="pre">download_from_github()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_cases_truths"><code class="docutils literal notranslate"><span class="pre">load_cases_truths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_cases_weekly"><code class="docutils literal notranslate"><span class="pre">load_cases_weekly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_deaths_truths"><code class="docutils literal notranslate"><span class="pre">load_deaths_truths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_deaths_weekly"><code class="docutils literal notranslate"><span class="pre">load_deaths_weekly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_hosps_truths"><code class="docutils literal notranslate"><span class="pre">load_hosps_truths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_hosps_weekly"><code class="docutils literal notranslate"><span class="pre">load_hosps_weekly()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../simulation/simulation.html">Simulation</a></li>
@@ -109,10 +122,10 @@
     text-align: unset;
 }
 </style>
-<section id="module-chimeric_tools.Data">
-<span id="chimeric-tools-data"></span><h1>chimeric_tools.Data<a class="headerlink" href="#module-chimeric_tools.Data" title="Permalink to this heading"></a></h1>
+<section id="chimeric-tools-data">
+<h1>chimeric_tools.Data<a class="headerlink" href="#chimeric-tools-data" title="Permalink to this heading"></a></h1>
 <p>Classes to keep data up to date</p>
-<dl class="py function">
+<span class="target" id="module-chimeric_tools.Data"></span><dl class="py function">
 <dt class="sig sig-object py" id="chimeric_tools.Data.check_for_data">
 <span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">check_for_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#chimeric_tools.Data.check_for_data" title="Permalink to this definition"></a></dt>
 <dd><p>Check to see if a  file exists</p>
