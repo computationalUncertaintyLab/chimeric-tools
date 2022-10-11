@@ -9,9 +9,9 @@ def test_load_truths():
     os.remove(os.path.dirname(__file__) + "/../data/truth-Incident Deaths.csv.gz")
     os.remove(os.path.dirname(__file__) + "/../data/truth-Incident Hospitalizations.csv.gz")
 
-    assert isinstance(load_cases_truths(), pd.DataFrame)
-    assert isinstance(load_deaths_truths(), pd.DataFrame)
-    assert isinstance(load_hosps_truths(), pd.DataFrame)
+    assert isinstance(load_truth(CASES_TRUTHS), pd.DataFrame)
+    assert isinstance(load_truth(DEATHS_TRUTHS), pd.DataFrame)
+    assert isinstance(load_truth(HOSPS_TRUTHS), pd.DataFrame)
 
 
 def test_load_weekly_covid():
@@ -19,12 +19,12 @@ def test_load_weekly_covid():
     os.remove(os.path.dirname(__file__) + "/../data/deaths_weekly.csv.gz")
     os.remove(os.path.dirname(__file__) + "/../data/hosps_weekly.csv.gz")
 
-    assert isinstance(load_cases_weekly(), pd.DataFrame)
-    assert isinstance(load_deaths_weekly(), pd.DataFrame)
-    assert isinstance(load_hosps_weekly(), pd.DataFrame)
+    assert isinstance(load_weekly(CASES_WEEKLY), pd.DataFrame)
+    assert isinstance(load_weekly(DEATHS_WEEKLY), pd.DataFrame)
+    assert isinstance(load_weekly(HOSPS_WEEKLY), pd.DataFrame)
 
 def test_weekly():
-    data = load_cases_truths()
+    data = load_weekly(CASES_WEEKLY)
     data = data.loc[data["location"].isin(["US", "42"])]
     assert isinstance(daily_to_weekly(data), pd.DataFrame)
 
