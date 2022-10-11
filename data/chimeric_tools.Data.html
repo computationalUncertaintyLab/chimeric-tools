@@ -51,8 +51,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.covid_data"><code class="docutils literal notranslate"><span class="pre">covid_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.daily_to_weekly"><code class="docutils literal notranslate"><span class="pre">daily_to_weekly()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.download_from_github"><code class="docutils literal notranslate"><span class="pre">download_from_github()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_truth"><code class="docutils literal notranslate"><span class="pre">load_truth()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_weekly"><code class="docutils literal notranslate"><span class="pre">load_weekly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_cases_truths"><code class="docutils literal notranslate"><span class="pre">load_cases_truths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_cases_weekly"><code class="docutils literal notranslate"><span class="pre">load_cases_weekly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_deaths_truths"><code class="docutils literal notranslate"><span class="pre">load_deaths_truths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_deaths_weekly"><code class="docutils literal notranslate"><span class="pre">load_deaths_weekly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_file"><code class="docutils literal notranslate"><span class="pre">load_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_hosps_truths"><code class="docutils literal notranslate"><span class="pre">load_hosps_truths()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chimeric_tools.Data.load_hosps_weekly"><code class="docutils literal notranslate"><span class="pre">load_hosps_weekly()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -192,9 +197,9 @@ Dataframe must be in format [ date: date or str, location: str, location_name, s
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="chimeric_tools.Data.load_truth">
-<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_truth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_truth" title="Permalink to this definition"></a></dt>
-<dd><p>Loads raw case data from CSSE dataset</p>
+<dt class="sig sig-object py" id="chimeric_tools.Data.load_cases_truths">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_cases_truths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_cases_truths" title="Permalink to this definition"></a></dt>
+<dd><p>Loads raw case truths from CSSE dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dataframe</p>
@@ -203,9 +208,64 @@ Dataframe must be in format [ date: date or str, location: str, location_name, s
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="chimeric_tools.Data.load_weekly">
-<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_weekly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_weekly" title="Permalink to this definition"></a></dt>
-<dd><p>Load weekly data complete with ARIMA(2,1,0) predictions and residuals</p>
+<dt class="sig sig-object py" id="chimeric_tools.Data.load_cases_weekly">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_cases_weekly</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_cases_weekly" title="Permalink to this definition"></a></dt>
+<dd><p>Load weekly cases complete with ARIMA(2,1,0) predictions and residuals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.load_deaths_truths">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_deaths_truths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_deaths_truths" title="Permalink to this definition"></a></dt>
+<dd><p>Loads raw death truths from CSSE dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.load_deaths_weekly">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_deaths_weekly</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_deaths_weekly" title="Permalink to this definition"></a></dt>
+<dd><p>Load weekly deaths complete with ARIMA(2,1,0) predictions and residuals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.load_file">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_file" title="Permalink to this definition"></a></dt>
+<dd><p>Loads a file from local or downloads from github and streams data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.load_hosps_truths">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_hosps_truths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_hosps_truths" title="Permalink to this definition"></a></dt>
+<dd><p>Loads raw hosp truths from CSSE dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chimeric_tools.Data.load_hosps_weekly">
+<span class="sig-prename descclassname"><span class="pre">chimeric_tools.Data.</span></span><span class="sig-name descname"><span class="pre">load_hosps_weekly</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chimeric_tools.Data.load_hosps_weekly" title="Permalink to this definition"></a></dt>
+<dd><p>Load weekly hosps complete with ARIMA(2,1,0) predictions and residuals</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dataframe</p>

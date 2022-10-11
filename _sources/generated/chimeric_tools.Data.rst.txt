@@ -17,8 +17,13 @@
       covid_data
       daily_to_weekly
       download_from_github
-      load_truth
-      load_weekly
+      load_cases_truths
+      load_cases_weekly
+      load_deaths_truths
+      load_deaths_weekly
+      load_file
+      load_hosps_truths
+      load_hosps_weekly
    
    
 
