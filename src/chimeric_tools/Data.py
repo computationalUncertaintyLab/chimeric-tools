@@ -29,30 +29,78 @@ def check_for_data(filename: str) -> bool:
     """
     return os.path.exists("".join(os.path.dirname(__file__) + "/data/" + filename))
 
-def load_truth(filename):
+def load_cases_truths():
     """
-    Loads raw case data from CSSE dataset
+    Loads raw case truths from CSSE dataset
 
     Returns
     ---------
         dataframe
     """
-    if not check_for_data(filename):
-        download_from_github(filename)
-    stream = pkg_resources.resource_stream(__name__, "data/" + filename)
-    data = pd.read_csv(stream, compression="gzip")
-    data["location"] = data["location"].astype(str)
-    data['date'] = pd.to_datetime(data['date'], format = '%Y-%m-%d')
-
-    return data
+    return load_file(CASES_TRUTHS)
 
 
-def load_weekly(filename):
+def load_deaths_truths():
     """
-    Load weekly data complete with ARIMA(2,1,0) predictions and residuals
+    Loads raw death truths from CSSE dataset
 
     Returns
-    ----------
+    ---------
+        dataframe
+    """
+    return load_file(DEATHS_TRUTHS)
+
+
+def load_hosps_truths():
+    """
+    Loads raw hosp truths from CSSE dataset
+
+    Returns
+    ---------
+        dataframe
+    """
+    return load_file(HOSPS_TRUTHS)
+
+
+def load_cases_weekly():
+    """
+    Load weekly cases complete with ARIMA(2,1,0) predictions and residuals
+
+    Returns
+    ---------
+        dataframe
+    """
+    return load_file(CASES_WEEKLY)
+
+
+def load_deaths_weekly():
+    """
+    Load weekly deaths complete with ARIMA(2,1,0) predictions and residuals
+    
+    Returns
+    ---------
+        dataframe
+    """
+    return load_file(DEATHS_WEEKLY)
+
+
+def load_hosps_weekly():
+    """
+    Load weekly hosps complete with ARIMA(2,1,0) predictions and residuals
+
+    Returns
+    ---------
+        dataframe
+    """
+    return load_file(HOSPS_WEEKLY)
+
+
+def load_file(filename):
+    """
+    Loads a file from local or downloads from github and streams data
+
+    Returns
+    ---------
         dataframe
     """
     if not check_for_data(filename):
@@ -183,26 +231,26 @@ def covid_data(
     for i in include:
         if i == "cases":
             if is_first:
-                data = load_weekly(CASES_WEEKLY)
+                data = load_cases_weekly()
                 is_first = False
             else:
-                data = data.merge(load_weekly(CASES_WEEKLY), on=["date", "location", "location_name", "EW", "end_date"])
+                data = data.merge(load_cases_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
             if not preds:
                 data = data.drop(columns=["preds_cases", "residuals_cases"])
         elif i == "deaths":
             if is_first:
-                data = load_weekly(DEATHS_WEEKLY)
+                data = load_deaths_weekly()
                 is_first = False
             else:
-                data = data.merge(load_weekly(DEATHS_WEEKLY), on=["date", "location", "location_name", "EW", "end_date"])
+                data = data.merge(load_deaths_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
             if not preds:
                 data = data.drop(columns=["preds_deaths", "residuals_deaths"])
         elif i == "hosps":
             if is_first:
-                data = load_weekly(HOSPS_WEEKLY)
+                data = load_hosps_weekly()
                 is_first = False
             else:
-                data = data.merge(load_weekly(HOSPS_WEEKLY), on=["date", "location", "location_name", "EW", "end_date"])
+                data = data.merge(load_hosps_weekly(), on=["date", "location", "location_name", "EW", "end_date"])
             if not preds:
                 data = data.drop(columns=["preds_hosps", "residuals_hosps"])
         else:
