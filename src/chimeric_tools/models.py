@@ -722,7 +722,7 @@ class catboost:
 
     def fit(self):
         forecaster = ForecasterAutoreg(
-                        regressor = CatBoostRegressor(random_state=123, silent=True , n_jobs = 4),
+                        regressor = CatBoostRegressor(random_state=123, silent=True,booster='gblinear'),
                         lags = 15
                         )
         forecaster.fit(y=self.data)
@@ -737,7 +737,7 @@ class catboost:
     def predict(self):
         y_pred = self.fit.predict(self.N_tilde)
         ar_params = np.array([1])
-        ar_params = np.append(ar_params, self.fit.get_coef()["coef"].to_numpy().T * -1)
+        ar_params = np.append(ar_params, self.fit.feature_importances_.to_numpy().T * -1)
         # print(ar_params)
         ma = ar2ma(ar_params, np.ones(1), lags = 15)
         # print(ma)
