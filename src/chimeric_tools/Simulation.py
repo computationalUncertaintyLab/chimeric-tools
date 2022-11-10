@@ -3,14 +3,13 @@ Simulate COVID data
 """
 from typing import (
     Dict,
-    Optional,
-    Generator,
     Union,
 )
 from datetime import date
 import numpy as np
 import pandas as pd
 from chimeric_tools.Data import covid_data
+from chimeric_tools.DataFlu import flu_data
 from arch.bootstrap import CircularBlockBootstrap
 from arch.bootstrap import optimal_block_length as arch_optimal_block_length
 
@@ -196,6 +195,153 @@ class COVID(object):
                     #TODO: add a column that indicated the target
                     preds = "".join("preds_" + i)
                     bootstrapped_data[i] = sim_data.reset_index(drop=True) + sub_data[preds]
+            sim_num += 1
+            bs_data = pd.concat([bs_data, bootstrapped_data])
+        return bs_data.reset_index(drop=True)
+
+class Flu(object):
+    """
+    Flu simulation class
+
+    Parameters
+    ----------
+    start_date : date, optional
+        The start date of the simulation. Defaults to None.
+    end_date : date, optional
+        The end date of the simulation. Defaults to None.
+    geo_values : Union[np.ndarray, Dict[str, float], str, list, None], optional
+        The geo values to use. Defaults to None.
+    seed : Union[None, int, Generator], optional
+        The seed to use. Defaults to None.
+    """
+
+
+    def __init__(
+        self,
+        start_date: Union[date, str, None] = None,
+        end_date: Union[date, str, None] = None,
+        geo_values: Union[np.ndarray, list, str, None] = None,
+        seed: Union[None, int, np.random.Generator] = None
+    ) -> None:
+        self.start_date = start_date
+        self.end_date = end_date
+        self.include= ["wili"]
+
+        # --convert geo_values to correct type
+        if isinstance(geo_values, (np.ndarray, list)):
+            self.geo_values = geo_values
+            self.p = None
+        elif isinstance(geo_values, dict):
+            if not abs(1 - sum(geo_values.values())) <= 0.001:
+                raise ValueError("geo_values must sum to 1")
+            self.geo_values = np.array(list(geo_values.keys()))
+            self.p = np.array(list(geo_values.values()))
+        elif isinstance(geo_values, str):
+            self.geo_values = np.array([geo_values])
+            self.p = None
+        elif geo_values is None:
+            self.geo_values = None
+            self.p = None
+        
+        self.data = flu_data(
+            self.start_date,
+            self.end_date,
+            self.geo_values
+        )
+        if geo_values is None:
+            self.geo_values = self.data["location"].unique()
+
+        # --set seed
+        if isinstance(seed, np.random.Generator):
+            self.generator = seed
+        elif isinstance(seed, (int, np.integer)):
+            self.generator = np.random.default_rng(int(seed))
+        elif seed is None:
+            self.generator = np.random.default_rng()
+        else:
+            raise TypeError(
+                "generator keyword argument must contain a NumPy Generator or "
+                "RandomState instance or an integer when used."
+            )
+
+    def pick_geo_values(self, reps: int) -> np.ndarray:
+        """
+        Randomly generate geo values with probability p and repeat for reps times
+
+        Parameters
+        ----------
+        reps : int
+            The number of times to repeat the random generation.
+        
+        Returns
+        ----------
+        np.ndarray
+            The randomly generated geo values.
+        """
+        indices = self.generator.choice(a=len(self.geo_values), size=reps, p=self.p)
+        return np.array([self.geo_values[x] for x in indices])
+
+    def pick_flu_season(self, reps: int) -> np.ndarray:
+        """
+        Randomly generate flu season year values with probability p and repeat for reps times
+
+        Parameters
+        ----------
+        reps : int
+            The number of times to repeat the random generation.
+        
+        Returns
+        ----------
+        np.ndarray
+            The randomly generated geo values.
+        """
+        # TODO: give weights to years (currently uniform distribution)
+        years = self.data['year'].unique()
+        indices = self.generator.choice(a=len(years), size=reps, p=self.p)
+        return np.array([years[x] for x in indices])
+
+    def simulate(self, reps: int):
+        """
+        Simulate data `reps` times. Simulations are made by (1) using a simple model to get in-sample predictions and their respective residuals.
+        (2) Using a block bootstrap with block length of `block_length` to bootstrap the residuals. (3) Adding the new residuals back to the in-sample prediction data.
+        
+        Parameters
+        ----------
+        reps : int
+            The number of times to repeat the simulation.
+
+        Returns
+        ----------
+        pd.DataFrame
+            The simulated data in the form of a dataframe. The dataframe will contain the predictions and residuals used for each parameter along witht he 
+            simulated data. The column `sim` distinguishes what number simulation it is.
+            
+        """
+        geo_for_sample = self.pick_geo_values(reps)
+
+        # --for each geo value boostrap the residuals and add to data
+
+        sim_num = 0
+
+        bs_data = pd.DataFrame()
+
+        for geo_value in geo_for_sample:
+            # this gets the data where location == geo_value
+            sub_data = self.data[self.data["location"] == geo_value].reset_index(drop=True)
+
+            # --make temp dataframe to hold bootstrapped data
+            bootstrapped_data = sub_data.loc[sub_data['year'] == 2010, ["date", "end_date", "location", "EW"]].copy()
+            bootstrapped_data["sim"] = sim_num
+
+            # --choose random year for each week
+            years = self.pick_flu_season(reps=52)
+
+            print(years)
+
+            values = []
+            for week, year in enumerate(years, 1):
+                values.append(sub_data.loc[(sub_data['week'] == week) & (sub_data['year'] == year), 'value'])
+            bootstrapped_data["value"] = pd.Series(values)
             sim_num += 1
             bs_data = pd.concat([bs_data, bootstrapped_data])
         return bs_data.reset_index(drop=True)
