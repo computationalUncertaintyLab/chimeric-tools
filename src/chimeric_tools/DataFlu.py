@@ -62,7 +62,8 @@ def _add_start_end_dates(df: pd.DataFrame):
 def flu_data(
 	start_date: Union[date, str, None] = None,
 	end_date: Union[date, str, None] = None,
-	geo_values: Union[np.ndarray, list, str, None] = None):
+	geo_values: Union[np.ndarray, list, str, None] = None,
+	years: Union[np.ndarray, list, int, None] = None):
 
 	data = _load_flu_weekly()
 	
@@ -77,6 +78,17 @@ def flu_data(
 		pass
 	else:
 		raise ValueError("geo_values must be a list, string, or numpy array")
+
+	if years is None:
+		years = data["year"].unique()
+	elif isinstance(years, list):
+		years = np.array(years)
+	elif isinstance(years, int):
+		years = np.array([years])
+	elif isinstance(years, np.ndarray):
+		pass
+	else:
+		raise ValueError("year must be a list, string, or numpy array")
 
 	# --get min and max dates
 	max_date = max(data["end_date"])
@@ -115,7 +127,8 @@ def flu_data(
 	mask = (
 		(data["date"] >= start_date)
 		& (data["end_date"] <= end_date)
-	) & (data["location"].isin(geo_values))
+	) & (data["location"].isin(geo_values)
+	 *(data["year"].isin(years)))
 
 	return data.loc[mask].reset_index(drop=True)
 

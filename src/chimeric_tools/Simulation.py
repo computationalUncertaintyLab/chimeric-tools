@@ -221,6 +221,7 @@ class Flu(object):
         start_date: Union[date, str, None] = None,
         end_date: Union[date, str, None] = None,
         geo_values: Union[np.ndarray, list, str, None] = None,
+        years: Union[np.ndarray, list, str, None] = None,
         seed: Union[None, int, np.random.Generator] = None
     ) -> None:
         self.start_date = start_date
@@ -242,11 +243,27 @@ class Flu(object):
         elif geo_values is None:
             self.geo_values = None
             self.p = None
+
+        if isinstance(years, (np.ndarray, list)):
+            self.years = years
+            self.p_year = None
+        elif isinstance(years, dict):
+            if not abs(1 - sum(years.values())) <= 0.001:
+                raise ValueError("years must sum to 1")
+            self.years = np.array(list(years.keys()))
+            self.p_year = np.array(list(years.values()))
+        elif isinstance(years, str):
+            self.years = np.array([years])
+            self.p_year = None
+        elif geo_values is None:
+            self.years = None
+            self.p_year = None
         
         self.data = flu_data(
             self.start_date,
             self.end_date,
-            self.geo_values
+            self.geo_values,
+            self.years
         )
         if geo_values is None:
             self.geo_values = self.data["location"].unique()
@@ -297,7 +314,7 @@ class Flu(object):
         """
         # TODO: give weights to years (currently uniform distribution)
         years = self.data['year'].unique()
-        indices = self.generator.choice(a=len(years), size=reps, p=self.p)
+        indices = self.generator.choice(a=len(years), size=reps, p=self.p_year)
         return np.array([years[x] for x in indices])
 
     def simulate(self, reps: int):
@@ -336,11 +353,12 @@ class Flu(object):
             # --choose random year for each week
             years = self.pick_flu_season(reps=52)
 
-            print(years)
-
             values = []
+            EW = []
             for week, year in enumerate(years, 1):
+                EW.append(sub_data.loc[(sub_data['week'] == week) & (sub_data['year'] == year), 'EW'])
                 values.append(sub_data.loc[(sub_data['week'] == week) & (sub_data['year'] == year), 'value'])
+            bootstrapped_data["EW"] = pd.Series(EW)
             bootstrapped_data["value"] = pd.Series(values)
             sim_num += 1
             bs_data = pd.concat([bs_data, bootstrapped_data])
